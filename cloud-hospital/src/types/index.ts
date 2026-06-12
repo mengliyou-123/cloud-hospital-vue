@@ -93,3 +93,47 @@ export interface SysOperLog {
   username?: string
   realName?: string
 }
+
+export interface PayOrder {
+  id: number
+  patientId: number
+  prescriptionId?: number | null
+  registerId?: number | null
+  totalFee: number
+  payType: number
+  payStatus: number
+  payTime?: string
+  createTime?: string
+  patientName?: string
+  patientPhone?: string
+}
+
+export interface FinanceRecord {
+  id: number
+  orderId?: number | null
+  recordType: number
+  money: number
+  recordDesc: string
+  recordTime?: string
+}
+
+export interface Reimburse {
+  id: number
+  userId: number
+  reimburseType: string
+  totalMoney: number
+  reimburseDesc: string
+  auditStatus: number
+  createTime?: string
+  username?: string
+  realName?: string
+}
+
+export interface StatisticsDashboard {
+  financeSummary: Record<string, any>
+  monthlyFinance: Record<string, any>[]
+  payStatus: Record<string, any>[]
+  reimburseStatus: Record<string, any>[]
+  visitDept: Record<string, any>[]
+  stockWarnings: Record<string, any>[]
+}
