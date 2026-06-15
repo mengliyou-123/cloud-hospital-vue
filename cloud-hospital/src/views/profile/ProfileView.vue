@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
-import { profileApi, profileUpdateApi, profilePatientUpdateApi } from '../../api/common'
+import { profileApi, profileUpdateApi, profilePatientUpdateApi, profileDoctorUpdateApi } from '../../api/common'
 import { changePasswordApi } from '../../api/auth'
 import { getUser, saveUser } from '../../utils/request'
 import type { LoginUser, ChangePasswordForm } from '../../types'
@@ -32,6 +32,12 @@ const patientForm = reactive({
   gender: 1,
   address: '',
   pastMedical: ''
+})
+
+const doctorForm = reactive({
+  title: '',
+  skill: '',
+  workStatus: 1
 })
 
 const pwdFormRef = ref<FormInstance>()
@@ -76,6 +82,13 @@ async function loadProfile() {
         patientForm.gender = res.data.gender ?? 1
         patientForm.address = res.data.address || ''
         patientForm.pastMedical = res.data.pastMedical || ''
+        activeTab.value = 'patient'
+      }
+      if (res.data.roleCode === 'doctor') {
+        doctorForm.title = res.data.doctorTitle || ''
+        doctorForm.skill = res.data.doctorSkill || ''
+        doctorForm.workStatus = res.data.doctorWorkStatus ?? 1
+        activeTab.value = 'doctor'
       }
     }
   } finally {
@@ -109,6 +122,18 @@ async function submitPatient() {
   })
   if (res.code === 200) {
     ElMessage.success('患者档案已更新')
+    loadProfile()
+  }
+}
+
+async function submitDoctor() {
+  const res = await profileDoctorUpdateApi({
+    title: doctorForm.title,
+    skill: doctorForm.skill,
+    workStatus: doctorForm.workStatus
+  })
+  if (res.code === 200) {
+    ElMessage.success('医生信息已更新')
     loadProfile()
   }
 }
@@ -239,6 +264,36 @@ function goBack() {
               </el-form-item>
               <el-form-item>
                 <el-button type="primary" @click="submitPatient">保存档案</el-button>
+              </el-form-item>
+            </el-form>
+          </el-tab-pane>
+
+          <el-tab-pane v-if="profile.roleCode === 'doctor'" label="医生信息" name="doctor">
+            <el-form label-width="96px" class="profile-form">
+              <el-form-item label="职称">
+                <el-input v-model="doctorForm.title" placeholder="请输入职称，如：主治医师、副主任医师等" />
+              </el-form-item>
+              <el-form-item label="专业技能">
+                <el-input
+                  v-model="doctorForm.skill"
+                  type="textarea"
+                  :rows="3"
+                  placeholder="请输入专业技能，如：擅长呼吸系统疾病诊治"
+                />
+              </el-form-item>
+              <el-form-item label="在岗状态">
+                <el-radio-group v-model="doctorForm.workStatus">
+                  <el-radio :value="1">在岗</el-radio>
+                  <el-radio :value="0">请假</el-radio>
+                  <el-radio :value="2">离岗</el-radio>
+                </el-radio-group>
+              </el-form-item>
+              <el-form-item label="所属科室">
+                <el-tag v-if="profile.doctorDeptName" type="success">{{ profile.doctorDeptName }}</el-tag>
+                <el-tag v-else type="info">未分配科室，请联系管理员分配</el-tag>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" @click="submitDoctor">保存信息</el-button>
               </el-form-item>
             </el-form>
           </el-tab-pane>

@@ -57,3 +57,9 @@ export const profilePatientUpdateApi = (data: {
   address?: string
   pastMedical?: string
 }): Promise<Result<null>> => request.post('/profile/patient/update', data)
+
+export const profileDoctorUpdateApi = (data: {
+  title?: string
+  skill?: string
+  workStatus?: number
+}): Promise<Result<null>> => request.post('/profile/doctor/update', data)

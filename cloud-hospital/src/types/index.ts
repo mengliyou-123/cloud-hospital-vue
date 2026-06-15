@@ -82,6 +82,22 @@ export interface SysDict {
   createTime?: string
 }
 
+export interface Patient {
+  id: number
+  userId: number
+  username?: string
+  realName: string
+  phone: string
+  idCard?: string
+  age?: number
+  gender?: number
+  address?: string
+  pastMedical?: string
+  status?: number
+  createTime?: string
+  updateTime?: string
+}
+
 export interface SysOperLog {
   id: number
   userId?: number
@@ -92,4 +108,133 @@ export interface SysOperLog {
   operTime: string
   username?: string
   realName?: string
+}
+
+// ========== 挂号相关类型 ==========
+
+export interface Department {
+  id: number
+  deptName: string
+  deptDesc: string
+  status: number
+}
+
+export interface Doctor {
+  id: number
+  userId: number
+  deptId: number
+  deptName: string
+  realName: string
+  title: string
+  skill: string
+  workStatus: number
+}
+
+export interface Schedule {
+  id: number
+  doctorId: number
+  deptId: number
+  scheduleDate: string
+  timeSlot: string
+  scheduleStatus: number
+}
+
+export interface RegisterRecord {
+  id: number
+  patientId: number
+  doctorId: number
+  deptId: number
+  registerDate: string
+  timeSlot: string
+  registerStatus: number
+  registerFee: number
+  createTime: string
+  deptName: string
+  doctorName: string
+  doctorTitle: string
+  patientName: string
+}
+
+// ========== 诊疗相关类型 ==========
+
+export interface TreatmentVO {
+  id: number
+  registerId: number
+  patientId: number
+  doctorId: number
+  diseaseDesc: string
+  diagnosisResult: string
+  doctorAdvice: string
+  treatmentTime: string
+  createTime: string
+  patientName: string
+  patientPhone: string
+  doctorName: string
+  deptName: string
+  registerDate: string
+  timeSlot: string
+  registerStatus: number
+  registerFee: number
+}
+
+export interface Drug {
+  id: number
+  drugName: string
+  drugSpec: string
+  drugType: string
+  price: number
+  manufacturer: string
+  validTime: string
+  usage: string
+  status: number
+}
+
+export interface PrescriptionItemVO {
+  id: number
+  prescriptionId: number
+  drugId: number
+  drugNum: number
+  drugPrice: number
+  drugName: string
+  drugSpec: string
+  manufacturer: string
+}
+
+export interface PrescriptionVO {
+  id: number
+  treatmentId: number
+  doctorId: number
+  prescriptionTime: string
+  totalMoney: number
+  prescriptionStatus: number
+  createTime: string
+  doctorName: string
+  patientName: string
+  diagnosisResult: string
+  items: PrescriptionItemVO[]
+}
+
+export interface PayOrderVO {
+  id: number
+  patientId: number
+  prescriptionId: number
+  registerId: number
+  totalFee: number
+  payType: number
+  payStatus: number
+  payTime: string
+  createTime: string
+  patientName: string
+  doctorName: string
+  deptName: string
+  diagnosisResult: string
+  registerDate: string
+  timeSlot: string
+  registerFee: number
+}
+
+export interface PrescriptionItemDTO {
+  drugId: number
+  drugNum: number
+  drugPrice: number
 }

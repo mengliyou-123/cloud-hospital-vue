@@ -49,7 +49,7 @@ const submit = async () => {
   <div class="login-wrapper">
     <div class="login-card">
       <div class="brand">
-        <el-icon :size="28" color="#409eff"><Hospital /></el-icon>
+        <el-icon :size="28" color="#409eff"><Plus /></el-icon>
         <div>
           <div class="title">云医院信息管理系统</div>
           <div class="subtitle">Cloud Hospital Information System</div>

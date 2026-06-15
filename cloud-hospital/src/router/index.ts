@@ -33,6 +33,18 @@ const routes: RouteRecordRaw[] = [
     meta: { title: '患者中心 - 云医院', roles: ['patient'] }
   },
   {
+    path: '/patient/register',
+    name: 'PatientRegister',
+    component: () => import('../views/patient/RegisterView.vue'),
+    meta: { title: '在线挂号 - 云医院', roles: ['patient'] }
+  },
+  {
+    path: '/patient/registers',
+    name: 'PatientRegisters',
+    component: () => import('../views/patient/MyRegisters.vue'),
+    meta: { title: '挂号记录 - 云医院', roles: ['patient'] }
+  },
+  {
     path: '/patient/profile',
     name: 'PatientProfile',
     component: () => import('../views/profile/ProfileView.vue'),
@@ -44,12 +56,36 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../views/operlog/OperLogView.vue'),
     meta: { title: '我的操作记录 - 云医院', roles: ['patient'] }
   },
+  {
+    path: '/patient/treatments',
+    name: 'PatientTreatments',
+    component: () => import('../views/patient/MyTreatments.vue'),
+    meta: { title: '历史就诊记录 - 云医院', roles: ['patient'] }
+  },
+  {
+    path: '/patient/prescriptions',
+    name: 'PatientPrescriptions',
+    component: () => import('../views/patient/MyPrescriptions.vue'),
+    meta: { title: '处方与缴费 - 云医院', roles: ['patient'] }
+  },
   // --- 医生工作台 ---
   {
     path: '/doctor/home',
     name: 'DoctorHome',
     component: () => import('../views/DoctorHome.vue'),
     meta: { title: '医生工作台 - 云医院', roles: ['doctor'] }
+  },
+  {
+    path: '/doctor/consultation',
+    name: 'DoctorConsultation',
+    component: () => import('../views/doctor/ConsultationView.vue'),
+    meta: { title: '接诊工作台 - 云医院', roles: ['doctor'] }
+  },
+  {
+    path: '/doctor/patients',
+    name: 'DoctorPatients',
+    component: () => import('../views/PatientAdminView.vue'),
+    meta: { title: '患者档案 - 云医院', roles: ['doctor'] }
   },
   {
     path: '/doctor/profile',
@@ -97,6 +133,12 @@ const routes: RouteRecordRaw[] = [
     meta: { title: '系统管理 - 云医院', roles: ['super_admin'] }
   },
   {
+    path: '/super-admin/patients',
+    name: 'SuperAdminPatients',
+    component: () => import('../views/PatientAdminView.vue'),
+    meta: { title: '患者档案管理 - 云医院', roles: ['super_admin'] }
+  },
+  {
     path: '/super-admin/profile',
     name: 'SuperAdminProfile',
     component: () => import('../views/profile/ProfileView.vue'),
@@ -125,6 +167,12 @@ const routes: RouteRecordRaw[] = [
     name: 'SuperAdminLogs',
     component: () => import('../views/operlog/OperLogView.vue'),
     meta: { title: '操作日志 - 云医院', roles: ['super_admin'] }
+  },
+  {
+    path: '/super-admin/departments',
+    name: 'SuperAdminDepartments',
+    component: () => import('../views/admin/DeptAdminView.vue'),
+    meta: { title: '科室管理 - 云医院', roles: ['super_admin'] }
   },
   {
     path: '/:pathMatch(.*)*',

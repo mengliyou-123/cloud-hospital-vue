@@ -1,5 +1,5 @@
 import request from '../utils/request'
-import type { SysRole, SysUser, PageResult, Result } from '../types'
+import type { SysRole, SysUser, PageResult, Result, Department, Doctor } from '../types'
 
 export const roleAllApi = (): Promise<Result<SysRole[]>> =>
   request.get('/admin/roles/all')
@@ -52,3 +52,41 @@ export const userDeleteApi = (id: number): Promise<Result<null>> =>
 
 export const userResetPasswordApi = (id: number, newPassword: string): Promise<Result<null>> =>
   request.post(`/admin/users/${id}/reset-password`, { newPassword })
+
+// ========== 科室管理 API ==========
+
+export const deptPageApi = (params: {
+  deptName?: string
+  status?: number
+  pageNum: number
+  pageSize: number
+}): Promise<Result<PageResult<Department>>> => request.get('/admin/departments', { params })
+
+export const deptAllApi = (): Promise<Result<Department[]>> =>
+  request.get('/admin/departments/all')
+
+export const deptDetailApi = (id: number): Promise<Result<Department>> =>
+  request.get(`/admin/departments/${id}`)
+
+export const deptAddApi = (data: Partial<Department>): Promise<Result<Department>> =>
+  request.post('/admin/departments', data)
+
+export const deptUpdateApi = (data: Partial<Department>): Promise<Result<Department>> =>
+  request.put('/admin/departments', data)
+
+export const deptUpdateStatusApi = (id: number, status: number): Promise<Result<null>> =>
+  request.patch(`/admin/departments/${id}/status?status=${status}`)
+
+export const deptDeleteApi = (id: number): Promise<Result<null>> =>
+  request.delete(`/admin/departments/${id}`)
+
+export const deptDoctorsApi = (deptId: number): Promise<Result<Doctor[]>> =>
+  request.get(`/admin/departments/${deptId}/doctors`)
+
+// ========== 医生分配到科室 API ==========
+
+export const doctorAllApi = (): Promise<Result<Doctor[]>> =>
+  request.get('/admin/departments/doctors/all')
+
+export const assignDoctorDeptApi = (doctorId: number, deptId: number): Promise<Result<null>> =>
+  request.patch(`/admin/departments/doctors/${doctorId}/dept?deptId=${deptId}`)
