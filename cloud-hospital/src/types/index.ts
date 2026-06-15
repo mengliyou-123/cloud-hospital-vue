@@ -110,6 +110,7 @@ export interface SysOperLog {
   realName?: string
 }
 
+<<<<<<< HEAD
 // ========== 挂号相关类型 ==========
 
 export interface Department {
@@ -237,4 +238,48 @@ export interface PrescriptionItemDTO {
   drugId: number
   drugNum: number
   drugPrice: number
+=======
+export interface PayOrder {
+  id: number
+  patientId: number
+  prescriptionId?: number | null
+  registerId?: number | null
+  totalFee: number
+  payType: number
+  payStatus: number
+  payTime?: string
+  createTime?: string
+  patientName?: string
+  patientPhone?: string
+}
+
+export interface FinanceRecord {
+  id: number
+  orderId?: number | null
+  recordType: number
+  money: number
+  recordDesc: string
+  recordTime?: string
+}
+
+export interface Reimburse {
+  id: number
+  userId: number
+  reimburseType: string
+  totalMoney: number
+  reimburseDesc: string
+  auditStatus: number
+  createTime?: string
+  username?: string
+  realName?: string
+}
+
+export interface StatisticsDashboard {
+  financeSummary: Record<string, any>
+  monthlyFinance: Record<string, any>[]
+  payStatus: Record<string, any>[]
+  reimburseStatus: Record<string, any>[]
+  visitDept: Record<string, any>[]
+  stockWarnings: Record<string, any>[]
+>>>>>>> 6840e0fd3654f1752e2995ba462b1dff19997d0b
 }

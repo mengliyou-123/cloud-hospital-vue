@@ -125,6 +125,30 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../views/profile/ProfileView.vue'),
     meta: { title: '个人中心 - 云医院', roles: ['finance_admin'] }
   },
+  {
+    path: '/finance-admin/pay-orders',
+    name: 'FinancePayOrders',
+    component: () => import('../views/finance/PayOrderView.vue'),
+    meta: { title: '收费结算 - 云医院', roles: ['finance_admin'] }
+  },
+  {
+    path: '/finance-admin/records',
+    name: 'FinanceRecords',
+    component: () => import('../views/finance/FinanceRecordView.vue'),
+    meta: { title: '财务台账 - 云医院', roles: ['finance_admin'] }
+  },
+  {
+    path: '/finance-admin/reimburses',
+    name: 'FinanceReimburses',
+    component: () => import('../views/finance/ReimburseView.vue'),
+    meta: { title: '报销管理 - 云医院', roles: ['finance_admin'] }
+  },
+  {
+    path: '/finance-admin/reports',
+    name: 'FinanceReports',
+    component: () => import('../views/finance/ReportView.vue'),
+    meta: { title: '统计报表 - 云医院', roles: ['finance_admin'] }
+  },
   // --- 系统管理员 ---
   {
     path: '/super-admin/home',
@@ -169,10 +193,17 @@ const routes: RouteRecordRaw[] = [
     meta: { title: '操作日志 - 云医院', roles: ['super_admin'] }
   },
   {
+<<<<<<< HEAD
     path: '/super-admin/departments',
     name: 'SuperAdminDepartments',
     component: () => import('../views/admin/DeptAdminView.vue'),
     meta: { title: '科室管理 - 云医院', roles: ['super_admin'] }
+=======
+    path: '/super-admin/reports',
+    name: 'SuperAdminReports',
+    component: () => import('../views/finance/ReportView.vue'),
+    meta: { title: '统计报表 - 云医院', roles: ['super_admin'] }
+>>>>>>> 6840e0fd3654f1752e2995ba462b1dff19997d0b
   },
   {
     path: '/:pathMatch(.*)*',

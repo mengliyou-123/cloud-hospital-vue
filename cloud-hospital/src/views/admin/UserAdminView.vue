@@ -213,18 +213,17 @@ async function handleResetPwd(row: SysUser) {
 
 async function handleBindRole(row: SysUser) {
   try {
+    const roleTips = roleList.value.map((r) => `${r.id}=${r.roleName}`).join('，')
     const { value }: any = await ElMessageBox.prompt(
-      '请选择新的角色',
+      `请输入新的角色ID（${roleTips}）`,
       `绑定角色 - ${row.username}`,
       {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        inputType: 'select',
-        inputValue: row.roleId,
-        inputPattern: /.*/,
+        inputValue: String(row.roleId),
+        inputPattern: /^\d+$/,
         inputErrorMessage: '请选择角色',
-        inputValidator: (v: any) => (v == null || v === '' ? '请选择角色' : true),
-        inputOptions: roleList.value.map((r) => ({ value: r.id, label: r.roleName }))
+        inputValidator: (v: any) => (v == null || v === '' ? '请选择角色' : true)
       }
     )
     const rid: number = Number(value)
