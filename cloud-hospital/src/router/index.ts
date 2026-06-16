@@ -130,6 +130,24 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../views/profile/ProfileView.vue'),
     meta: { title: '个人中心 - 云医院', roles: ['drug_admin'] }
   },
+  {
+    path: '/drug-admin/drug-stock',
+    name: 'DrugStockAdmin',
+    component: () => import('../views/pharmacy/DrugStockView.vue'),
+    meta: { title: '药品库存管理 - 云医院', roles: ['drug_admin'] }
+  },
+  {
+    path: '/drug-admin/purchase',
+    name: 'DrugPurchaseAdmin',
+    component: () => import('../views/pharmacy/DrugPurchaseView.vue'),
+    meta: { title: '药品采购管理 - 云医院', roles: ['drug_admin'] }
+  },
+  {
+    path: '/drug-admin/dispense',
+    name: 'DrugDispenseAdmin',
+    component: () => import('../views/pharmacy/DrugDispenseView.vue'),
+    meta: { title: '处方配药管理 - 云医院', roles: ['drug_admin'] }
+  },
   // --- 财务管理员 ---
   {
     path: '/finance-admin/home',

@@ -2,9 +2,9 @@
 import RoleLayout from '../components/RoleLayout.vue'
 
 const features = [
-  { title: '药品库存', desc: '查看药品库存，管理药品上下限。', icon: 'Box' },
-  { title: '采购管理', desc: '发起采购申请，审核入库。', icon: 'Goods' },
-  { title: '处方配药', desc: '根据患者处方完成配药发药。', icon: 'TakeawayBox' }
+  { title: '药品库存', desc: '管理药品信息、库存、预警、盘点。', icon: 'Box', path: '/drug-admin/drug-stock' },
+  { title: '采购管理', desc: '发起采购申请、审核入库、记录溯源。', icon: 'Goods', path: '/drug-admin/purchase' },
+  { title: '处方配药', desc: '接收医生电子处方、拣选、配药、发药。', icon: 'TakeawayBox', path: '/drug-admin/dispense' }
 ]
 </script>
 
