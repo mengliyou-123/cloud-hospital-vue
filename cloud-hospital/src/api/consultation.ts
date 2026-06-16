@@ -29,6 +29,10 @@ export const createPrescriptionApi = (data: {
 }): Promise<Result<PrescriptionVO>> =>
   request.post('/doctor/consultation/prescription', data)
 
-/** 医生查看历史诊疗记录 */
-export const getDoctorHistoryApi = (): Promise<Result<TreatmentVO[]>> =>
-  request.get('/doctor/consultation/history')
+/** 医生查看历史诊疗记录（支持日期范围、患者姓名筛选） */
+export const getDoctorHistoryApi = (params?: {
+  startDate?: string
+  endDate?: string
+  patientName?: string
+}): Promise<Result<TreatmentVO[]>> =>
+  request.get('/doctor/consultation/history', { params })

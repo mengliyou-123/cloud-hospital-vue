@@ -110,7 +110,6 @@ export interface SysOperLog {
   realName?: string
 }
 
-<<<<<<< HEAD
 // ========== 挂号相关类型 ==========
 
 export interface Department {
@@ -137,7 +136,7 @@ export interface Schedule {
   deptId: number
   scheduleDate: string
   timeSlot: string
-  scheduleStatus: number
+  status: number
 }
 
 export interface RegisterRecord {
@@ -238,7 +237,8 @@ export interface PrescriptionItemDTO {
   drugId: number
   drugNum: number
   drugPrice: number
-=======
+}
+
 export interface PayOrder {
   id: number
   patientId: number
@@ -281,5 +281,4 @@ export interface StatisticsDashboard {
   reimburseStatus: Record<string, any>[]
   visitDept: Record<string, any>[]
   stockWarnings: Record<string, any>[]
->>>>>>> 6840e0fd3654f1752e2995ba462b1dff19997d0b
 }

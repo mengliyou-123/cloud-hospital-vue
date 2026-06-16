@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
@@ -19,6 +19,13 @@ const pendingList = ref<TreatmentVO[]>([])
 const historyList = ref<TreatmentVO[]>([])
 const loading = ref(false)
 const drugs = ref<Drug[]>([])
+
+// 搜索条件
+const searchParams = reactive({
+  startDate: '',
+  endDate: '',
+  patientName: ''
+})
 
 // 当前接诊状态
 const activeTreatment = ref<TreatmentVO | null>(null)
@@ -58,13 +65,24 @@ async function loadPendingList() {
 async function loadHistory() {
   loading.value = true
   try {
-    const res = await getDoctorHistoryApi()
+    const params: any = {}
+    if (searchParams.startDate) params.startDate = searchParams.startDate
+    if (searchParams.endDate) params.endDate = searchParams.endDate
+    if (searchParams.patientName) params.patientName = searchParams.patientName
+    const res = await getDoctorHistoryApi(params)
     if (res.code === 200) {
       historyList.value = res.data || []
     }
   } finally {
     loading.value = false
   }
+}
+
+function resetSearch() {
+  searchParams.startDate = ''
+  searchParams.endDate = ''
+  searchParams.patientName = ''
+  loadHistory()
 }
 
 async function loadDrugs() {
@@ -365,8 +383,43 @@ const prescriptionTotal = computed(() => {
 
           <!-- 历史记录 -->
           <template v-if="activeTab === 'history'">
+            <!-- 检索表单 -->
+            <div style="margin-bottom:16px;padding:12px 16px;background:#f8fafc;border-radius:6px;">
+              <el-form :inline="true" :model="searchParams" size="default">
+                <el-form-item label="就诊日期">
+                  <el-date-picker
+                    v-model="searchParams.startDate"
+                    type="date"
+                    value-format="YYYY-MM-DD"
+                    placeholder="开始日期"
+                    style="width:150px"
+                  />
+                  <span style="margin:0 6px;color:#909399">-</span>
+                  <el-date-picker
+                    v-model="searchParams.endDate"
+                    type="date"
+                    value-format="YYYY-MM-DD"
+                    placeholder="结束日期"
+                    style="width:150px"
+                  />
+                </el-form-item>
+                <el-form-item label="患者姓名">
+                  <el-input
+                    v-model="searchParams.patientName"
+                    placeholder="请输入患者姓名"
+                    clearable
+                    style="width:180px"
+                  />
+                </el-form-item>
+                <el-form-item>
+                  <el-button type="primary" @click="loadHistory">查询</el-button>
+                  <el-button @click="resetSearch">重置</el-button>
+                </el-form-item>
+              </el-form>
+            </div>
+
             <el-empty v-if="historyList.length === 0 && !loading" description="暂无历史诊疗记录" />
-            <el-table v-else :data="historyList" stripe style="width:100%">
+            <el-table v-else :data="historyList" stripe style="width:100%" v-loading="loading">
               <el-table-column prop="id" label="诊疗编号" width="90" />
               <el-table-column prop="patientName" label="患者姓名" width="100" />
               <el-table-column prop="deptName" label="科室" width="100" />

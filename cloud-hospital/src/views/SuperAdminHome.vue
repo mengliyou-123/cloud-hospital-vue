@@ -2,20 +2,17 @@
 import RoleLayout from '../components/RoleLayout.vue'
 
 const features = [
-<<<<<<< HEAD
-  { title: '患者档案管理', desc: '新增/编辑/禁用/查询患者档案，支持多条件检索。', icon: 'User', path: '/super-admin/patients' },
   { title: '用户管理', desc: '管理系统用户账号、分配角色权限', icon: 'Avatar', path: '/super-admin/users' },
   { title: '角色管理', desc: '维护角色列表，支持新增/编辑/删除角色', icon: 'Collection', path: '/super-admin/roles' },
   { title: '科室管理', desc: '管理科室信息，分配医生到相应科室', icon: 'OfficeBuilding', path: '/super-admin/departments' },
+  { title: '医护人员管理', desc: '医生档案、职称、所属科室维护', icon: 'UserFilled', path: '/super-admin/doctors' },
+  { title: '排班管理', desc: '统一排班：按日期+科室+时段分配医生出诊', icon: 'Calendar', path: '/super-admin/schedules' },
+  { title: '请假审批', desc: '医生请假申请审批，审核记录', icon: 'EditPen', path: '/super-admin/leave-audit' },
+  { title: '考勤记录', desc: '医生出勤打卡记录查询、考勤统计', icon: 'DataAnalysis', path: '/super-admin/attendance' },
+  { title: '患者档案管理', desc: '新增/编辑/禁用/查询患者档案', icon: 'User', path: '/super-admin/patients' },
   { title: '数据字典', desc: '统一维护科室/病症/收费项目等基础数据', icon: 'Reading', path: '/super-admin/dicts' },
-  { title: '操作日志', desc: '审计系统关键操作，追踪异常行为', icon: 'Document', path: '/super-admin/logs' }
-=======
-  { title: '用户管理', desc: '管理系统用户账号、分配角色权限', icon: 'User', path: '/super-admin/users' },
-  { title: '角色管理', desc: '维护角色列表，支持新增/编辑/删除角色', icon: 'Avatar', path: '/super-admin/roles' },
-  { title: '数据字典', desc: '统一维护科室/病症/收费项目等基础数据', icon: 'Collection', path: '/super-admin/dicts' },
   { title: '操作日志', desc: '审计系统关键操作，追踪异常行为', icon: 'Document', path: '/super-admin/logs' },
   { title: '统计报表', desc: '汇总财务、就诊、药品库存等运营数据', icon: 'TrendCharts', path: '/super-admin/reports' }
->>>>>>> 6840e0fd3654f1752e2995ba462b1dff19997d0b
 ]
 </script>
 

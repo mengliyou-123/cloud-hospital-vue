@@ -76,6 +76,24 @@ const routes: RouteRecordRaw[] = [
     meta: { title: '医生工作台 - 云医院', roles: ['doctor'] }
   },
   {
+    path: '/doctor/schedules',
+    name: 'DoctorSchedules',
+    component: () => import('../views/doctor/DoctorScheduleView.vue'),
+    meta: { title: '我的排班 - 云医院', roles: ['doctor'] }
+  },
+  {
+    path: '/doctor/attendance',
+    name: 'DoctorAttendance',
+    component: () => import('../views/doctor/DoctorAttendanceView.vue'),
+    meta: { title: '考勤打卡 - 云医院', roles: ['doctor'] }
+  },
+  {
+    path: '/doctor/leave',
+    name: 'DoctorLeave',
+    component: () => import('../views/doctor/DoctorLeaveView.vue'),
+    meta: { title: '请假申请 - 云医院', roles: ['doctor'] }
+  },
+  {
     path: '/doctor/consultation',
     name: 'DoctorConsultation',
     component: () => import('../views/doctor/ConsultationView.vue'),
@@ -193,17 +211,40 @@ const routes: RouteRecordRaw[] = [
     meta: { title: '操作日志 - 云医院', roles: ['super_admin'] }
   },
   {
-<<<<<<< HEAD
     path: '/super-admin/departments',
     name: 'SuperAdminDepartments',
     component: () => import('../views/admin/DeptAdminView.vue'),
     meta: { title: '科室管理 - 云医院', roles: ['super_admin'] }
-=======
+  },
+  {
+    path: '/super-admin/doctors',
+    name: 'SuperAdminDoctors',
+    component: () => import('../views/admin/DoctorAdminView.vue'),
+    meta: { title: '医护人员管理 - 云医院', roles: ['super_admin'] }
+  },
+  {
+    path: '/super-admin/schedules',
+    name: 'SuperAdminSchedules',
+    component: () => import('../views/admin/ScheduleAdminView.vue'),
+    meta: { title: '排班管理 - 云医院', roles: ['super_admin'] }
+  },
+  {
+    path: '/super-admin/leave-audit',
+    name: 'SuperAdminLeaveAudit',
+    component: () => import('../views/admin/LeaveAdminView.vue'),
+    meta: { title: '请假审批 - 云医院', roles: ['super_admin'] }
+  },
+  {
+    path: '/super-admin/attendance',
+    name: 'SuperAdminAttendance',
+    component: () => import('../views/admin/AttendanceAdminView.vue'),
+    meta: { title: '考勤记录 - 云医院', roles: ['super_admin'] }
+  },
+  {
     path: '/super-admin/reports',
     name: 'SuperAdminReports',
     component: () => import('../views/finance/ReportView.vue'),
     meta: { title: '统计报表 - 云医院', roles: ['super_admin'] }
->>>>>>> 6840e0fd3654f1752e2995ba462b1dff19997d0b
   },
   {
     path: '/:pathMatch(.*)*',

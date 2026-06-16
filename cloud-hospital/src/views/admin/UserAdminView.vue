@@ -10,9 +10,11 @@ import {
   userUpdateStatusApi,
   userBindRoleApi,
   userResetPasswordApi,
-  roleAllApi
+  userDetailApi,
+  roleAllApi,
+  deptAllApi
 } from '../../api/admin'
-import type { SysUser, SysRole } from '../../types'
+import type { SysUser, SysRole, Department } from '../../types'
 
 const router = useRouter()
 
@@ -20,6 +22,7 @@ const list = ref<SysUser[]>([])
 const total = ref(0)
 const loading = ref(false)
 const roleList = ref<SysRole[]>([])
+const deptList = ref<Department[]>([])
 
 const searchParams = reactive({
   username: '',
@@ -43,8 +46,20 @@ const editForm = reactive({
   phone: '',
   idCard: '',
   roleId: undefined as number | undefined,
-  status: 1
+  status: 1,
+  // 医生专属字段
+  deptId: undefined as number | undefined,
+  title: '',
+  skill: '',
+  workStatus: 1
 })
+
+// 判断当前选中的角色是否为医生
+function isDoctorRole(roleId: number | undefined): boolean {
+  if (!roleId) return false
+  const role = roleList.value.find((r) => r.id === roleId)
+  return role?.roleCode === 'doctor'
+}
 
 const editRules: FormRules = {
   username: [
@@ -62,6 +77,11 @@ const editRules: FormRules = {
 async function loadRoles() {
   const res = await roleAllApi()
   if (res.code === 200) roleList.value = res.data || []
+}
+
+async function loadDepts() {
+  const res = await deptAllApi()
+  if (res.code === 200) deptList.value = res.data || []
 }
 
 async function loadList() {
@@ -113,10 +133,14 @@ function openAdd() {
   editForm.idCard = ''
   editForm.roleId = undefined
   editForm.status = 1
+  editForm.deptId = undefined
+  editForm.title = ''
+  editForm.skill = ''
+  editForm.workStatus = 1
   dialogVisible.value = true
 }
 
-function openEdit(row: SysUser) {
+async function openEdit(row: SysUser) {
   editId.value = row.id
   dialogTitle.value = '编辑用户'
   editForm.username = row.username
@@ -126,6 +150,25 @@ function openEdit(row: SysUser) {
   editForm.idCard = row.idCard || ''
   editForm.roleId = row.roleId
   editForm.status = row.status
+  editForm.deptId = undefined
+  editForm.title = ''
+  editForm.skill = ''
+  editForm.workStatus = 1
+  // 如果是医生角色，通过 detail 接口获取医生信息
+  if (isDoctorRole(row.roleId)) {
+    try {
+      const res = await userDetailApi(row.id)
+      if (res.code === 200 && res.data) {
+        const d: any = res.data
+        editForm.deptId = d.deptId
+        editForm.title = d.title || ''
+        editForm.skill = d.skill || ''
+        editForm.workStatus = d.workStatus != null ? d.workStatus : 1
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
   dialogVisible.value = true
 }
 
@@ -141,6 +184,13 @@ async function submitEdit() {
       idCard: editForm.idCard,
       roleId: editForm.roleId,
       status: editForm.status
+    }
+    // 如果是医生，附带医生字段
+    if (isDoctorRole(editForm.roleId)) {
+      payload.deptId = editForm.deptId
+      payload.title = editForm.title
+      payload.skill = editForm.skill
+      payload.workStatus = editForm.workStatus
     }
     let res
     if (editId.value) {
@@ -240,6 +290,7 @@ async function handleBindRole(row: SysUser) {
 
 onMounted(() => {
   loadRoles()
+  loadDepts()
   loadList()
 })
 </script>
@@ -404,6 +455,27 @@ onMounted(() => {
             <el-radio :value="0">禁用</el-radio>
           </el-radio-group>
         </el-form-item>
+        <template v-if="isDoctorRole(editForm.roleId)">
+          <el-divider content-position="left">医生信息</el-divider>
+          <el-form-item label="所属科室">
+            <el-select v-model="editForm.deptId" placeholder="请选择科室" style="width:100%" clearable>
+              <el-option v-for="d in deptList" :key="d.id" :label="d.deptName" :value="d.id" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="职称">
+            <el-input v-model="editForm.title" placeholder="例如：主任医师" />
+          </el-form-item>
+          <el-form-item label="专业技能">
+            <el-input v-model="editForm.skill" type="textarea" :rows="2" placeholder="擅长的领域或技能" />
+          </el-form-item>
+          <el-form-item label="人员状态">
+            <el-radio-group v-model="editForm.workStatus">
+              <el-radio :value="1">在职</el-radio>
+              <el-radio :value="2">请假</el-radio>
+              <el-radio :value="0">离岗</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </template>
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
