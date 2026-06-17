@@ -4,6 +4,7 @@ import { ElMessageBox } from 'element-plus'
 import RoleLayout from '../components/RoleLayout.vue'
 import CareModeQuickPanel from '../components/CareModeQuickPanel.vue'
 import { checkCareModeApi } from '../api/systemConfig'
+import { sendTodayReminderApi } from '../api/visit-flow'
 import DashboardPanel from '../components/DashboardPanel.vue'
 import {
   applyCareModeForCurrentUser,
@@ -68,7 +69,11 @@ async function checkAndPromptCareMode() {
   }
 }
 
-onMounted(checkAndPromptCareMode)
+// onMounted(checkAndPromptCareMode)
+  onMounted(() => {
+    checkAndPromptCareMode()
+    sendTodayReminderApi().catch(() => {})
+  })
 </script>
 
 <template>

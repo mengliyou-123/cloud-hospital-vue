@@ -20,7 +20,8 @@ request.interceptors.response.use(
     const res = response.data
     if (res && res.code !== undefined && res.code !== 200) {
       if (res.code === 401) {
-        localStorage.removeItem('loginUser')
+        // localStorage.removeItem('loginUser')
+        clearUser()
         ElMessage.error(res.message || '登录已过期，请重新登录')
         router.push('/login')
         return Promise.reject(new Error(res.message || '未登录'))
@@ -33,7 +34,8 @@ request.interceptors.response.use(
   (error) => {
     const status = error.response?.status
     if (status === 401) {
-      localStorage.removeItem('loginUser')
+      // localStorage.removeItem('loginUser')
+      clearUser()
       ElMessage.error('登录已过期，请重新登录')
       router.push('/login')
     } else {

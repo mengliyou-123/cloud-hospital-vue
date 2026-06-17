@@ -14,6 +14,7 @@ const features = [
   { title: '数据字典', desc: '统一维护科室/病症/收费项目等基础数据', icon: 'Reading', path: '/super-admin/dicts' },
   { title: '关怀模式配置', desc: '设置长者友好模式、默认提示年龄和语音提示规则', icon: 'HelpFilled', path: '/super-admin/care-mode' },
   { title: '操作日志', desc: '审计系统关键操作，追踪异常行为', icon: 'Document', path: '/super-admin/logs' },
+  { title: '到诊与爽约统计', desc: '查看每日预约、到院、未到院和爽约情况', icon: 'DataAnalysis', path: '/super-admin/arrival-statistics' },
   { title: '统计报表', desc: '汇总财务、就诊、药品库存等运营数据', icon: 'TrendCharts', path: '/super-admin/reports' }
 ]
 </script>

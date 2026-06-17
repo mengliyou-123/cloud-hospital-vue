@@ -153,6 +153,9 @@ export interface RegisterRecord {
   doctorName: string
   doctorTitle: string
   patientName: string
+
+  arrivalStatus?: number
+  arrivalTime?: string
 }
 
 // ========== 诊疗相关类型 ==========
@@ -175,6 +178,9 @@ export interface TreatmentVO {
   timeSlot: string
   registerStatus: number
   registerFee: number
+
+  arrivalStatus?: number
+  arrivalTime?: string
 }
 
 export interface Drug {
@@ -393,4 +399,46 @@ export interface RoleDashboardVO {
   cards: DashboardCardVO[]
   todos: DashboardTodoVO[]
   latestMessages: SysMessageVO[]
+}
+
+
+
+
+// ========== 体验增强：就医流程 / 到诊确认 / 时间线 ==========
+
+export interface VisitTimelineNodeVO {
+  nodeKey: string
+  title: string
+  status: 'pending' | 'current' | 'completed' | 'warning' | 'canceled' | string
+  description: string
+  time?: string
+  path?: string
+}
+
+export interface VisitTimelineVO {
+  registerId: number
+  patientId: number
+  doctorId: number
+  patientName: string
+  doctorName: string
+  deptName: string
+  registerDate: string
+  timeSlot: string
+  registerStatus: number
+  arrivalStatus?: number
+  arrivalTime?: string
+  currentStage: string
+  nodes: VisitTimelineNodeVO[]
+}
+
+export interface ArrivalStatisticsVO {
+  statDate: string
+  appointmentCount: number
+  arrivedCount: number
+  notArrivedCount: number
+  canceledCount: number
+  treatedCount: number
+  noShowCount: number
+  arrivalRate: string
+  noShowRate: string
 }

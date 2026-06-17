@@ -283,6 +283,14 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../views/finance/ReportView.vue'),
     meta: { title: '统计报表 - 云医院', roles: ['super_admin'] }
   },
+
+  {
+    path: '/super-admin/arrival-statistics',
+    name: 'SuperAdminArrivalStatistics',
+    component: () => import('../views/admin/ArrivalStatisticsView.vue'),
+    meta: { title: '到诊与爽约统计 - 云医院', roles: ['super_admin'] }
+  },
+
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
