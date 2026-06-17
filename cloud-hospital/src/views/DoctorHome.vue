@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import RoleLayout from '../components/RoleLayout.vue'
+import DashboardPanel from '../components/DashboardPanel.vue'
 
 const features = [
   { title: '接诊工作台', desc: '查看今日挂号患者，开具诊疗记录。', icon: 'UserFilled', path: '/doctor/consultation' },
@@ -12,9 +13,13 @@ const features = [
 
 <template>
   <RoleLayout
-    page-title="医生工作台"
-    icon-name="UserFilled"
-    subtitle="高效接诊，规范诊疗"
+    page-title="医生工作站"
+    icon-name="FirstAidKit"
+    subtitle="查看排班、接诊患者、维护诊疗记录"
     :features="features"
-  />
+  >
+    <template #after-welcome>
+      <DashboardPanel />
+    </template>
+  </RoleLayout>
 </template>

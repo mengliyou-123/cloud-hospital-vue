@@ -6,6 +6,10 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import App from './App.vue'
 import router from './router'
 import './style.css'
+import './styles/care-mode.css'
+import { applyCareModeForCurrentUser } from './utils/careMode'
+
+applyCareModeForCurrentUser()
 
 const app = createApp(App)
 

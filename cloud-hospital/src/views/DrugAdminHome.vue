@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import RoleLayout from '../components/RoleLayout.vue'
+import DashboardPanel from '../components/DashboardPanel.vue'
 
 const features = [
   { title: '药品库存', desc: '管理药品信息、库存、预警、盘点。', icon: 'Box', path: '/drug-admin/drug-stock' },
@@ -12,7 +13,11 @@ const features = [
   <RoleLayout
     page-title="药房管理中心"
     icon-name="Box"
-    subtitle="药品全生命周期管理"
+    subtitle="管理药品、库存、采购和配药业务"
     :features="features"
-  />
+  >
+    <template #after-welcome>
+      <DashboardPanel />
+    </template>
+  </RoleLayout>
 </template>

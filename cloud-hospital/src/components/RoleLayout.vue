@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed, useSlots } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'element-plus'
 import { logoutApi, changePasswordApi } from '../api/auth'
-import { getUser, clearUser, saveUser } from '../utils/request'
+import { getUser, clearUser } from '../utils/request'
+import { applyCareModeForCurrentUser, clearCareModeRuntime } from '../utils/careMode'
+import CareModeToggle from './CareModeToggle.vue'
 import type { LoginUser, ChangePasswordForm } from '../types'
+import MessageBell from './MessageBell.vue'
 
 const props = defineProps<{
   pageTitle: string
@@ -14,6 +17,11 @@ const props = defineProps<{
 }>()
 
 const router = useRouter()
+const slots = useSlots()
+
+const hasFeatureCards = computed(() => !!props.features && props.features.length > 0)
+const showPlaceholder = computed(() => !hasFeatureCards.value && !slots.default)
+
 const user = ref<LoginUser | null>(null)
 const dialogVisible = ref(false)
 const pwdLoading = ref(false)
@@ -45,6 +53,7 @@ const pwdRules: FormRules = {
 
 onMounted(() => {
   user.value = getUser()
+  applyCareModeForCurrentUser()
 })
 
 function openProfile() {
@@ -113,6 +122,7 @@ const doLogout = async (silent = false) => {
     /* ignore */
   }
   clearUser()
+  clearCareModeRuntime()
   router.replace('/login')
   if (!silent) ElMessage.success('已退出登录')
 }
@@ -134,6 +144,8 @@ function onFeatureClick(f: { path?: string; title: string }) {
         <span class="logo">云医院信息管理系统</span>
       </div>
       <div class="right">
+        <MessageBell />
+        <CareModeToggle />
         <el-dropdown>
           <span class="user-chip">
             <el-avatar :size="32" style="background:#67c23a">{{
@@ -185,13 +197,17 @@ function onFeatureClick(f: { path?: string; title: string }) {
         </el-card>
       </section>
 
-      <section v-if="features && features.length" class="features">
+      <slot name="after-welcome" />
+
+      <section v-if="hasFeatureCards" class="features">
         <el-card
           v-for="(f, i) in features"
           :key="i"
           shadow="hover"
           class="feature-card"
+          tabindex="0"
           @click="onFeatureClick(f)"
+          @keydown.enter="onFeatureClick(f)"
         >
           <template #header>
             <div class="feature-header">
@@ -204,11 +220,13 @@ function onFeatureClick(f: { path?: string; title: string }) {
         </el-card>
       </section>
 
-      <section class="placeholder" v-if="!features || features.length === 0">
+      <section class="placeholder" v-if="showPlaceholder">
         <el-card shadow="never">
           <el-empty description="此处为后续业务功能的占位区域，请根据需求文档继续扩展" />
         </el-card>
       </section>
+
+      <slot />
     </main>
 
     <el-dialog v-model="dialogVisible" title="修改密码" width="420px">
@@ -246,10 +264,11 @@ function onFeatureClick(f: { path?: string; title: string }) {
   color: #fff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
-.left {
+.left,
+.right {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 .logo {
   font-size: 18px;
@@ -346,5 +365,22 @@ function onFeatureClick(f: { path?: string; title: string }) {
 }
 .placeholder {
   margin-top: 12px;
+}
+@media (max-width: 768px) {
+  .header {
+    padding: 0 12px;
+  }
+  .logo {
+    font-size: 15px;
+  }
+  .right {
+    gap: 6px;
+  }
+  .user-chip .name {
+    display: none;
+  }
+  .main {
+    padding: 16px;
+  }
 }
 </style>

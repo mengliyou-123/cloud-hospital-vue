@@ -134,19 +134,19 @@ const routes: RouteRecordRaw[] = [
     path: '/drug-admin/drug-stock',
     name: 'DrugStockAdmin',
     component: () => import('../views/pharmacy/DrugStockView.vue'),
-    meta: { title: '药品库存管理 - 云医院', roles: ['drug_admin'] }
+    meta: { title: '药品库存管理 - 云医院', roles: ['drug_admin', 'super_admin'] }
   },
   {
     path: '/drug-admin/purchase',
     name: 'DrugPurchaseAdmin',
     component: () => import('../views/pharmacy/DrugPurchaseView.vue'),
-    meta: { title: '药品采购管理 - 云医院', roles: ['drug_admin'] }
+    meta: { title: '药品采购管理 - 云医院', roles: ['drug_admin', 'super_admin'] }
   },
   {
     path: '/drug-admin/dispense',
     name: 'DrugDispenseAdmin',
     component: () => import('../views/pharmacy/DrugDispenseView.vue'),
-    meta: { title: '处方配药管理 - 云医院', roles: ['drug_admin'] }
+    meta: { title: '处方配药管理 - 云医院', roles: ['drug_admin', 'super_admin'] }
   },
   // --- 财务管理员 ---
   {
@@ -222,6 +222,14 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../views/admin/DictAdminView.vue'),
     meta: { title: '数据字典 - 云医院', roles: ['super_admin'] }
   },
+
+  {
+    path: '/super-admin/care-mode',
+    name: 'SuperAdminCareMode',
+    component: () => import('../views/admin/CareModeConfigView.vue'),
+    meta: { title: '关怀模式配置 - 云医院', roles: ['super_admin'] }
+  },
+
   {
     path: '/super-admin/logs',
     name: 'SuperAdminLogs',
@@ -246,6 +254,17 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../views/admin/ScheduleAdminView.vue'),
     meta: { title: '排班管理 - 云医院', roles: ['super_admin'] }
   },
+
+  {
+    path: '/messages',
+    name: 'MessageCenter',
+    component: () => import('../views/message/MessageCenterView.vue'),
+    meta: {
+      title: '消息中心 - 云医院',
+      roles: ['patient', 'doctor', 'drug_admin', 'finance_admin', 'super_admin']
+    }
+  },
+
   {
     path: '/super-admin/leave-audit',
     name: 'SuperAdminLeaveAudit',

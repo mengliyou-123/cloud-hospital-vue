@@ -1,0 +1,330 @@
+/* =========================================================
+   云医院 HIS：关怀模式 / 长者友好模式
+   设计目标：
+   1. 不是粗暴放大，而是提升可读性、可点击性、焦点可见性
+   2. 保持原系统蓝绿医疗风格，不破坏整体 UI
+   3. 适配后续前端重构，尽量用全局 class + CSS 变量控制
+   ========================================================= */
+
+body.care-mode {
+  --care-scale: var(--care-font-scale, 1.12);
+  --care-bg: #f3f7fb;
+  --care-card: #ffffff;
+  --care-text: #102a43;
+  --care-sub-text: #334e68;
+  --care-border: #b9d6f2;
+  --care-primary: #1677ff;
+  --care-primary-dark: #0b5ed7;
+  --care-success: #12805c;
+  --care-warning: #ad5f00;
+  --care-danger: #c62828;
+  --care-focus: #ffb020;
+  font-size: calc(16px * var(--care-scale));
+  background: var(--care-bg);
+  color: var(--care-text);
+}
+
+body.care-mode * {
+  letter-spacing: 0.01em;
+}
+
+body.care-mode .layout {
+  background:
+    radial-gradient(circle at top left, rgba(64, 158, 255, 0.08), transparent 30%),
+    var(--care-bg);
+}
+
+body.care-mode .header {
+  min-height: 66px;
+  background: linear-gradient(90deg, #0b5ed7, #168f72);
+  box-shadow: 0 4px 14px rgba(16, 42, 67, 0.16);
+}
+
+body.care-mode .logo {
+  font-size: 20px;
+}
+
+body.care-mode .user-chip {
+  min-height: 40px;
+  font-size: 16px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+}
+
+body.care-mode .main {
+  max-width: 1220px;
+  padding: 26px 30px 48px;
+}
+
+body.care-mode .hero {
+  padding: 18px 20px;
+  margin-bottom: 18px;
+  border-radius: 18px;
+  background: #ffffff;
+  border: 1px solid var(--care-border);
+  box-shadow: 0 8px 24px rgba(16, 42, 67, 0.08);
+}
+
+body.care-mode .hero-title {
+  font-size: 28px !important;
+  line-height: 1.35;
+  color: var(--care-text) !important;
+}
+
+body.care-mode .hero-sub {
+  margin-top: 4px;
+  font-size: 18px !important;
+  color: var(--care-sub-text) !important;
+}
+
+body.care-mode .welcome {
+  margin-bottom: 20px;
+}
+
+body.care-mode .greeting {
+  font-size: 18px !important;
+  line-height: 1.8;
+  color: var(--care-text);
+}
+
+body.care-mode .date {
+  font-size: 16px !important;
+  color: var(--care-sub-text) !important;
+}
+
+body.care-mode .el-card {
+  border-radius: 16px;
+  border: 1px solid var(--care-border);
+  background: var(--care-card);
+  box-shadow: 0 6px 20px rgba(16, 42, 67, 0.07);
+}
+
+body.care-mode .el-card__header {
+  padding: 18px 20px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--care-text);
+}
+
+body.care-mode .el-card__body {
+  padding: 20px;
+}
+
+body.care-mode .features {
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 18px;
+}
+
+body.care-mode .feature-card {
+  border-radius: 18px;
+  border: 1px solid #c8def4;
+}
+
+body.care-mode .feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 26px rgba(22, 119, 255, 0.14);
+}
+
+/* body.care-mode .feature-card :deep(.el-card__body), */
+body.care-mode .feature-card .el-card__body {
+  min-height: 118px;
+}
+
+body.care-mode .feature-header {
+  font-size: 20px;
+  gap: 10px;
+  color: var(--care-text);
+}
+
+body.care-mode .feature-desc {
+  font-size: 17px !important;
+  line-height: 1.8;
+  color: var(--care-sub-text) !important;
+}
+
+body.care-mode .feature-more {
+  margin-top: 12px;
+  font-size: 16px !important;
+  color: var(--care-primary-dark);
+  font-weight: 700;
+}
+
+body.care-mode .el-button {
+  min-height: 46px;
+  min-width: 92px;
+  padding: 12px 22px;
+  font-size: 17px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+body.care-mode .el-button--primary {
+  background: var(--care-primary);
+  border-color: var(--care-primary);
+}
+
+body.care-mode .el-button--danger {
+  background: var(--care-danger);
+  border-color: var(--care-danger);
+}
+
+body.care-mode .el-input__wrapper,
+body.care-mode .el-select__wrapper,
+body.care-mode .el-textarea__inner {
+  min-height: 46px;
+  font-size: 17px;
+  border-radius: 12px;
+}
+
+body.care-mode .el-form-item__label {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--care-text);
+}
+
+body.care-mode .el-table {
+  font-size: 17px;
+}
+
+body.care-mode .el-table th.el-table__cell {
+  background: #eaf4ff;
+  color: var(--care-text);
+  font-size: 17px;
+  font-weight: 700;
+}
+
+body.care-mode .el-table td.el-table__cell {
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+body.care-mode .el-tag {
+  min-height: 30px;
+  padding: 5px 10px;
+  font-size: 15px;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+body.care-mode .el-dialog {
+  border-radius: 18px;
+}
+
+body.care-mode .el-dialog__title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+body.care-mode .el-message-box {
+  border-radius: 18px;
+}
+
+body.care-mode .el-message-box__title {
+  font-size: 20px;
+}
+
+body.care-mode .el-message-box__message {
+  font-size: 17px;
+  line-height: 1.8;
+}
+
+body.care-mode[data-care-focus='true'] button:focus-visible,
+body.care-mode[data-care-focus='true'] a:focus-visible,
+body.care-mode[data-care-focus='true'] .el-button:focus-visible,
+body.care-mode[data-care-focus='true'] .el-input__wrapper:focus-within,
+body.care-mode[data-care-focus='true'] .feature-card:focus-visible {
+  outline: 3px solid var(--care-focus);
+  outline-offset: 3px;
+}
+
+body.care-mode[data-care-high-contrast='true'] .care-mode-important {
+  color: var(--care-danger);
+  font-weight: 800;
+}
+
+body.care-mode[data-care-high-contrast='true'] .care-mode-good {
+  color: var(--care-success);
+  font-weight: 800;
+}
+
+body.care-mode[data-care-high-contrast='true'] .care-mode-warning {
+  color: var(--care-warning);
+  font-weight: 800;
+}
+
+body.care-mode .care-quick-panel {
+  border: 2px solid #9cc9f5;
+  background: linear-gradient(180deg, #ffffff, #f0f7ff);
+}
+
+body.care-mode .care-quick-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+}
+
+body.care-mode .care-quick-action {
+  min-height: 86px;
+  border-radius: 16px;
+  border: 1px solid #b9d6f2;
+  background: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  transition: 0.2s;
+}
+
+body.care-mode .care-quick-action:hover {
+  transform: translateY(-2px);
+  border-color: #1677ff;
+  box-shadow: 0 8px 20px rgba(22, 119, 255, 0.12);
+}
+
+body.care-mode .care-quick-title {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--care-text);
+}
+
+body.care-mode .care-quick-desc {
+  margin-top: 4px;
+  font-size: 15px;
+  color: var(--care-sub-text);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@media (forced-colors: active) {
+  body.care-mode .el-card,
+  body.care-mode .feature-card,
+  body.care-mode .care-quick-action {
+    border: 1px solid CanvasText;
+  }
+
+  body.care-mode .el-button {
+    forced-color-adjust: auto;
+  }
+}

@@ -2,6 +2,7 @@ import axios, { type AxiosInstance, type InternalAxiosRequestConfig } from 'axio
 import type { LoginUser } from '../types'
 import router from '../router'
 import { ElMessage } from 'element-plus'
+import { clearCareModeRuntime } from './careMode'
 
 const request: AxiosInstance = axios.create({
   baseURL: '/api',
@@ -58,6 +59,7 @@ export function getUser(): LoginUser | null {
 
 export function clearUser() {
   localStorage.removeItem('loginUser')
+  clearCareModeRuntime()
 }
 
 export default request

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import RoleLayout from '../components/RoleLayout.vue'
+import DashboardPanel from '../components/DashboardPanel.vue'
 
 const features = [
   { title: '收费结算', desc: '处理患者挂号费、处方费用结算。', icon: 'Wallet', path: '/finance-admin/pay-orders' },
@@ -11,9 +12,13 @@ const features = [
 
 <template>
   <RoleLayout
-    page-title="财务工作台"
-    icon-name="Money"
-    subtitle="规范收支，精准台账"
+    page-title="财务管理中心"
+    icon-name="Wallet"
+    subtitle="处理缴费、收支、报销和财务报表"
     :features="features"
-  />
+  >
+    <template #after-welcome>
+      <DashboardPanel />
+    </template>
+  </RoleLayout>
 </template>

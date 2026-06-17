@@ -282,3 +282,115 @@ export interface StatisticsDashboard {
   visitDept: Record<string, any>[]
   stockWarnings: Record<string, any>[]
 }
+
+
+
+
+
+
+// ========== 体验增强：关怀模式 ==========
+
+export interface CareModeConfig {
+  enabled: boolean
+  ageThreshold: number
+  voiceEnabled: boolean
+  highContrastEnabled: boolean
+  simplifyMenuEnabled: boolean
+  focusEnhancedEnabled: boolean
+  quickPanelEnabled: boolean
+  fontScale: number
+  theme: string
+}
+
+export interface CareModeConfigUpdateDTO {
+  enabled?: boolean
+  ageThreshold?: number
+  voiceEnabled?: boolean
+  highContrastEnabled?: boolean
+  simplifyMenuEnabled?: boolean
+  focusEnhancedEnabled?: boolean
+  quickPanelEnabled?: boolean
+  fontScale?: number
+  theme?: string
+}
+
+export interface CareModeCheckVO {
+  userId?: number
+  roleCode?: string
+  patient: boolean
+  age?: number
+  eligible: boolean
+  shouldPrompt: boolean
+  config: CareModeConfig
+}
+
+
+// ========== 体验增强：站内消息 ==========
+
+export interface SysMessageVO {
+  id: number
+  receiverId: number
+  senderId?: number
+  title: string
+  content: string
+  messageType: 'system' | 'business' | 'notice' | 'warning' | string
+  businessType?: string
+  relatedId?: number
+  relatedPath?: string
+  priority: number
+  isRead: number
+  readTime?: string
+  createTime: string
+}
+
+export interface MessageUnreadVO {
+  unreadCount: number
+  latestMessages: SysMessageVO[]
+}
+
+export interface MessagePageResult {
+  records: SysMessageVO[]
+  total: number
+  pageNum: number
+  pageSize: number
+}
+
+export interface MessageCreateDTO {
+  receiverId: number
+  title: string
+  content: string
+  messageType?: string
+  businessType?: string
+  relatedId?: number
+  relatedPath?: string
+  priority?: number
+}
+
+// ========== 体验增强：多角色工作台 ==========
+
+export interface DashboardCardVO {
+  title: string
+  value: string
+  unit?: string
+  type: string
+  icon: string
+  path?: string
+  description?: string
+}
+
+export interface DashboardTodoVO {
+  title: string
+  count: string
+  type: string
+  path?: string
+  description?: string
+}
+
+export interface RoleDashboardVO {
+  roleCode: string
+  roleName: string
+  greeting: string
+  cards: DashboardCardVO[]
+  todos: DashboardTodoVO[]
+  latestMessages: SysMessageVO[]
+}
