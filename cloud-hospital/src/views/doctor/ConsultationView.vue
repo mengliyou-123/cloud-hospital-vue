@@ -231,9 +231,13 @@ const prescriptionTotal = computed(() => {
 <template>
   <div class="consultation-page">
     <div class="topbar">
-      <el-button @click="router.push('/doctor/home')" :icon="'ArrowLeft'">返回首页</el-button>
+      <div class="topbar-left">
+        <el-button @click="router.push('/doctor/home')" :icon="'ArrowLeft'">返回首页</el-button>
+      </div>
       <span class="topbar-title">接诊工作台</span>
-      <el-button type="primary" @click="loadPendingList">刷新列表</el-button>
+      <div class="topbar-right">
+        <el-button type="primary" @click="loadPendingList">刷新列表</el-button>
+      </div>
     </div>
 
     <div class="content">
@@ -451,13 +455,21 @@ const prescriptionTotal = computed(() => {
 .topbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: 12px 28px;
   background: #fff;
   box-shadow: 0 1px 4px rgba(0,0,0,0.06);
   margin-bottom: 20px;
 }
+.topbar-left, .topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 180px;
+}
+.topbar-right { justify-content: flex-end; }
 .topbar-title {
+  flex: 1;
+  text-align: center;
   font-size: 18px;
   font-weight: 700;
   color: #303133;

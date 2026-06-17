@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { doctorScheduleListApi } from '../../api/admin'
 import type { DoctorSchedule } from '../../api/admin'
+
+const router = useRouter()
 
 const list = ref<DoctorSchedule[]>([])
 const loading = ref(false)
@@ -53,6 +56,12 @@ function clearFilter() {
   loadList()
 }
 
+function onViewModeChange(val: string) {
+  if (val === 'week') setThisWeek()
+  else if (val === 'month') setThisMonth()
+  else clearFilter()
+}
+
 function formatDate(d: Date) {
   const y = d.getFullYear()
   const m = String(d.getMonth() + 1).padStart(2, '0')
@@ -91,15 +100,16 @@ onMounted(() => {
   <div class="page">
     <div class="container">
       <div class="topbar">
-        <h2>我的排班</h2>
-        <div>
-          <el-radio-group v-model="viewMode">
+        <div class="topbar-left">
+          <el-button @click="router.push('/doctor/home')" :icon="'ArrowLeft'">返回首页</el-button>
+        </div>
+        <span class="topbar-title">我的排班</span>
+        <div class="topbar-right">
+          <el-radio-group v-model="viewMode" @change="onViewModeChange">
             <el-radio-button value="week">本周</el-radio-button>
             <el-radio-button value="month">本月</el-radio-button>
             <el-radio-button value="list">全部</el-radio-button>
           </el-radio-group>
-          <el-button style="margin-left:12px" @click="setThisWeek">本周</el-button>
-          <el-button @click="setThisMonth">本月</el-button>
           <el-button @click="clearFilter">清除筛选</el-button>
         </div>
       </div>
@@ -176,8 +186,10 @@ onMounted(() => {
   box-sizing: border-box;
 }
 .container { max-width: 1200px; margin: 0 auto; }
-.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-.topbar h2 { margin: 0; font-size: 20px; color: #1f2d3d; }
+.topbar { display: flex; align-items: center; padding: 12px 20px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.06); border-radius: 8px; margin-bottom: 16px; }
+.topbar-left, .topbar-right { display: flex; align-items: center; gap: 12px; min-width: 180px; flex-wrap: wrap; }
+.topbar-right { justify-content: flex-end; }
+.topbar-title { flex: 1; text-align: center; font-size: 18px; font-weight: 700; color: #1f2d3d; }
 .card { border-radius: 8px; }
 .empty-tip { padding: 40px 0; }
 .day-group { margin-bottom: 20px; }
