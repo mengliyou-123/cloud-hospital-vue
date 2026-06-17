@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { leaveApplyApi, leaveListApi } from '../../api/admin'
 import type { DoctorLeave } from '../../api/admin'
+
+const router = useRouter()
 
 const list = ref<DoctorLeave[]>([])
 const total = ref(0)
@@ -95,8 +98,13 @@ onMounted(() => { loadList() })
   <div class="page">
     <div class="container">
       <div class="topbar">
-        <h2>请假申请</h2>
-        <el-button type="primary" @click="openApply">+ 新申请</el-button>
+        <div class="topbar-left">
+          <el-button @click="router.push('/doctor/home')" :icon="'ArrowLeft'">返回首页</el-button>
+        </div>
+        <span class="topbar-title">请假申请</span>
+        <div class="topbar-right">
+          <el-button type="primary" @click="openApply">+ 新申请</el-button>
+        </div>
       </div>
 
       <el-card shadow="never" class="card">
@@ -163,7 +171,9 @@ onMounted(() => { loadList() })
   box-sizing: border-box;
 }
 .container { max-width: 1000px; margin: 0 auto; }
-.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-.topbar h2 { margin: 0; font-size: 20px; color: #1f2d3d; }
+.topbar { display: flex; align-items: center; padding: 12px 20px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.06); border-radius: 8px; margin-bottom: 16px; }
+.topbar-left, .topbar-right { display: flex; align-items: center; gap: 12px; min-width: 180px; }
+.topbar-right { justify-content: flex-end; }
+.topbar-title { flex: 1; text-align: center; font-size: 18px; font-weight: 700; color: #1f2d3d; }
 .card { border-radius: 8px; }
 </style>

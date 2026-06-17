@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
   schedulePageApi,
@@ -12,6 +13,8 @@ import {
 } from '../../api/admin'
 import type { Department } from '../../types'
 import type { DoctorSchedule } from '../../api/admin'
+
+const router = useRouter()
 
 const list = ref<DoctorSchedule[]>([])
 const total = ref(0)
@@ -31,11 +34,9 @@ const searchParams = reactive({
 const dialogVisible = ref(false)
 const batchDialogVisible = ref(false)
 const isEdit = ref(false)
-const formRef = ref<any>()
-const batchFormRef = ref<any>()
 
 const editForm = reactive({
-  id: null as number | null,
+  id: undefined as number | undefined,
   doctorId: undefined as number | undefined,
   deptId: undefined as number | undefined,
   scheduleDate: '',
@@ -110,7 +111,7 @@ function handleSize(s: number) {
 
 function openAdd() {
   isEdit.value = false
-  editForm.id = null
+  editForm.id = undefined
   editForm.doctorId = undefined
   editForm.deptId = undefined
   editForm.scheduleDate = ''
@@ -221,6 +222,7 @@ onMounted(() => {
   <div class="page">
     <div class="container">
       <div class="topbar">
+        <el-button link @click="router.push('/super-admin/home')">返回首页</el-button>
         <h2>排班管理</h2>
         <div>
           <el-button type="primary" @click="openAdd">+ 新增排班</el-button>
@@ -304,7 +306,7 @@ onMounted(() => {
 
     <!-- 新增 / 编辑弹窗 -->
     <el-dialog v-model="dialogVisible" :title="isEdit ? '编辑排班' : '新增排班'" width="520px">
-      <el-form ref="formRef" :model="editForm" label-width="96px">
+      <el-form :model="editForm" label-width="96px">
         <el-form-item label="医生">
           <el-select v-model="editForm.doctorId" placeholder="请选择医生" style="width:100%" filterable>
             <el-option
@@ -347,7 +349,7 @@ onMounted(() => {
 
     <!-- 批量排班弹窗 -->
     <el-dialog v-model="batchDialogVisible" title="批量排班" width="560px">
-      <el-form ref="batchFormRef" :model="batchForm" label-width="96px">
+      <el-form :model="batchForm" label-width="96px">
         <el-form-item label="选择医生">
           <el-select v-model="batchForm.doctorIds" multiple placeholder="可多选" filterable style="width:100%">
             <el-option
@@ -399,6 +401,11 @@ onMounted(() => {
 .container { max-width: 1400px; margin: 0 auto; }
 .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
 .topbar h2 { margin: 0; font-size: 20px; color: #1f2d3d; }
+.topbar > div:nth-child(3) { display: flex; align-items: center; }
+.topbar h2,
+.topbar > div:first-child + h2 { flex: 1; text-align: center; }
+.topbar > *:first-child { min-width: 120px; }
+.topbar > *:last-child { min-width: 280px; display: flex; justify-content: flex-end; gap: 8px; }
 .card { border-radius: 8px; }
 .search-form { margin-bottom: 8px; }
 .pager { margin-top: 16px; display: flex; justify-content: flex-end; }

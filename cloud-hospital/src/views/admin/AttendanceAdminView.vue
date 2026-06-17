@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { attendanceAdminListApi, attendanceStatsApi, doctorAdminAllApi } from '../../api/admin'
+
+const router = useRouter()
 
 const list = ref<any[]>([])
 const total = ref(0)
@@ -63,7 +66,9 @@ onMounted(() => { loadDoctors(); loadList() })
   <div class="page">
     <div class="container">
       <div class="topbar">
+        <el-button link @click="router.push('/super-admin/home')">返回首页</el-button>
         <h2>考勤记录 & 统计</h2>
+        <div></div>
       </div>
 
       <el-row :gutter="16">
@@ -135,7 +140,7 @@ onMounted(() => { loadDoctors(); loadList() })
   box-sizing: border-box;
 }
 .container { max-width: 1300px; margin: 0 auto; }
-.topbar { margin-bottom: 16px; }
+.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
 .topbar h2 { margin: 0; font-size: 20px; color: #1f2d3d; }
 .card { border-radius: 8px; margin-top: 16px; }
 .stat-card { text-align: center; }

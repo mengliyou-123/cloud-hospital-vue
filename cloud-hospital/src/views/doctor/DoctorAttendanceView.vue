@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+
+const router = useRouter()
 import { doctorCheckInApi, doctorCheckOutApi, doctorAttendanceListApi } from '../../api/admin'
 import type { DoctorAttendance } from '../../api/admin'
 
@@ -85,7 +88,11 @@ function statusType(v: number) {
   <div class="page">
     <div class="container">
       <div class="topbar">
-        <h2>考勤打卡</h2>
+        <div class="topbar-left">
+          <el-button @click="router.push('/doctor/home')" :icon="'ArrowLeft'">返回首页</el-button>
+        </div>
+        <span class="topbar-title">考勤打卡</span>
+        <div class="topbar-right"></div>
       </div>
 
       <el-card shadow="never" class="card clock-card">
@@ -161,8 +168,10 @@ function statusType(v: number) {
   box-sizing: border-box;
 }
 .container { max-width: 900px; margin: 0 auto; }
-.topbar { margin-bottom: 16px; }
-.topbar h2 { margin: 0; font-size: 20px; color: #1f2d3d; }
+.topbar { display: flex; align-items: center; padding: 12px 20px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.06); border-radius: 8px; margin-bottom: 16px; }
+.topbar-left, .topbar-right { display: flex; align-items: center; gap: 12px; min-width: 180px; }
+.topbar-right { justify-content: flex-end; }
+.topbar-title { flex: 1; text-align: center; font-size: 18px; font-weight: 700; color: #1f2d3d; }
 .card { border-radius: 8px; margin-bottom: 16px; }
 .clock-card { text-align: center; padding: 20px 0; }
 .clock { margin-bottom: 20px; }
