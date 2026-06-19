@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import RoleLayout from '../components/RoleLayout.vue'
 import DashboardPanel from '../components/DashboardPanel.vue'
+import type { SidebarMenuItem } from '../components/Sidebar.vue'
 
 const features = [
   { title: '用户管理', desc: '管理系统用户账号、分配角色权限', icon: 'Avatar', path: '/super-admin/users' },
@@ -17,6 +18,24 @@ const features = [
   { title: '到诊与爽约统计', desc: '查看每日预约、到院、未到院和爽约情况', icon: 'DataAnalysis', path: '/super-admin/arrival-statistics' },
   { title: '统计报表', desc: '汇总财务、就诊、药品库存等运营数据', icon: 'TrendCharts', path: '/super-admin/reports' }
 ]
+
+const sidebarMenu: SidebarMenuItem[] = [
+  { label: '系统管理', icon: 'HomeFilled', path: '/super-admin/home' },
+  { label: '用户管理', icon: 'Avatar', path: '/super-admin/users' },
+  { label: '角色管理', icon: 'Collection', path: '/super-admin/roles' },
+  { label: '科室管理', icon: 'OfficeBuilding', path: '/super-admin/departments' },
+  { label: '医护管理', icon: 'UserFilled', path: '/super-admin/doctors' },
+  { label: '排班管理', icon: 'Calendar', path: '/super-admin/schedules' },
+  { label: '请假审批', icon: 'EditPen', path: '/super-admin/leave-audit' },
+  { label: '考勤记录', icon: 'DataAnalysis', path: '/super-admin/attendance' },
+  { label: '患者档案', icon: 'User', path: '/super-admin/patients' },
+  { label: '数据字典', icon: 'Reading', path: '/super-admin/dicts' },
+  { label: '关怀模式配置', icon: 'HelpFilled', path: '/super-admin/care-mode' },
+  { label: '操作日志', icon: 'Document', path: '/super-admin/logs' },
+  { label: '到诊统计', icon: 'DataLine', path: '/super-admin/arrival-statistics' },
+  { label: '统计报表', icon: 'TrendCharts', path: '/super-admin/reports' },
+  { label: '个人中心', icon: 'User', path: '/super-admin/profile' }
+]
 </script>
 
 <template>
@@ -25,6 +44,7 @@ const features = [
     icon-name="Setting"
     subtitle="统一管理用户、角色、科室、排班和运营数据"
     :features="features"
+    :sidebar-menu="sidebarMenu"
   >
     <template #after-welcome>
       <DashboardPanel />

@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { ElMessageBox } from 'element-plus'
 import RoleLayout from '../components/RoleLayout.vue'
+import type { SidebarMenuItem } from '../components/Sidebar.vue'
 import CareModeQuickPanel from '../components/CareModeQuickPanel.vue'
 import { checkCareModeApi } from '../api/systemConfig'
 import { sendTodayReminderApi } from '../api/visit-flow'
@@ -23,6 +24,15 @@ const features = [
   { title: '挂号记录', desc: '查看历史挂号记录，取消预约。', icon: 'Notebook', path: '/patient/registers' },
   { title: '就诊记录', desc: '查看所有历史就诊记录与诊断详情。', icon: 'Document', path: '/patient/treatments' },
   { title: '处方与缴费', desc: '查看处方详情，完成费用缴纳。', icon: 'Wallet', path: '/patient/prescriptions' }
+]
+
+const sidebarMenu: SidebarMenuItem[] = [
+  { label: '服务中心', icon: 'HomeFilled', path: '/patient/home' },
+  { label: '在线挂号', icon: 'Calendar', path: '/patient/register' },
+  { label: '挂号记录', icon: 'Notebook', path: '/patient/registers' },
+  { label: '就诊记录', icon: 'Document', path: '/patient/treatments' },
+  { label: '处方缴费', icon: 'Wallet', path: '/patient/prescriptions' },
+  { label: '个人中心', icon: 'User', path: '/patient/profile' }
 ]
 
 async function checkAndPromptCareMode() {
@@ -82,9 +92,10 @@ async function checkAndPromptCareMode() {
     icon-name="UserFilled"
     subtitle="便捷预约、查询就医信息"
     :features="features"
+    :sidebar-menu="sidebarMenu"
   >
     <template #after-welcome>
-      <CareModeQuickPanel v-if="showQuickPanel" class="quick-panel-wrap" />
+      <CareModeQuickPanel :class="{ 'quick-panel-hidden': !showQuickPanel }" />
       <DashboardPanel />
     </template>
   </RoleLayout>
@@ -93,5 +104,28 @@ async function checkAndPromptCareMode() {
 <style scoped>
 .quick-panel-wrap {
   margin-bottom: 18px;
+}
+
+/* 关怀模式关闭时平滑隐藏快捷面板，不直接移除 DOM */
+:deep(.care-quick-panel) {
+  margin-bottom: 18px;
+  transition:
+    opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    margin 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    padding 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+:deep(.care-quick-panel.quick-panel-hidden) {
+  opacity: 0;
+  transform: translateY(-12px);
+  max-height: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  pointer-events: none;
 }
 </style>

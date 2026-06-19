@@ -38,15 +38,16 @@ function onChange(value: boolean | string | number) {
   setCareModeEnabledForUser(next, user?.id, config.value)
 
   if (next) {
-    ElMessage.success('已开启关怀模式，页面即将刷新')
+    ElMessage.success('已开启关怀模式')
     speakCareModeText('已开启关怀模式，页面文字、按钮和提示已优化。', config.value?.voiceEnabled ?? true)
   } else {
-    ElMessage.info('已关闭关怀模式，页面即将刷新')
+    ElMessage.info('已关闭关怀模式')
   }
 
+  /* 等待过渡动画完成（400ms）后再刷新，避免布局抖动 */
   window.setTimeout(() => {
     window.location.reload()
-  }, 10)
+  }, 420)
 }
 
 onMounted(loadConfig)

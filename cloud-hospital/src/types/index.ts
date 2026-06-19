@@ -137,6 +137,8 @@ export interface Schedule {
   scheduleDate: string
   timeSlot: string
   status: number
+  remainingQuota?: number
+  quota?: number
 }
 
 export interface RegisterRecord {

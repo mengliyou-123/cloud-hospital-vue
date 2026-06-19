@@ -13,7 +13,6 @@ const prescriptions = ref<PrescriptionVO[]>([])
 const payOrders = ref<PayOrderVO[]>([])
 const loading = ref(false)
 
-// 处方详情弹窗
 const detailVisible = ref(false)
 const detailPrescription = ref<PrescriptionVO | null>(null)
 const detailLoading = ref(false)
@@ -104,41 +103,60 @@ function getPayTypeText(type: number) {
 
 <template>
   <div class="prescriptions-page">
-    <div class="topbar">
-      <el-button @click="router.push('/patient/home')" :icon="'ArrowLeft'">返回首页</el-button>
-      <span class="topbar-title">处方与缴费</span>
-      <span></span>
-    </div>
+    <header class="page-header">
+      <div class="page-header-inner">
+        <el-button text @click="router.push('/patient/home')">
+          <el-icon><ArrowLeft /></el-icon>
+          <span>返回首页</span>
+        </el-button>
+        <h1 class="page-title">处方与缴费</h1>
+        <div></div>
+      </div>
+    </header>
 
     <div class="content">
-      <el-card>
-        <template #header>
-          <el-tabs v-model="activeTab" @tab-change="handleTabChange">
-            <el-tab-pane label="我的处方单" name="prescriptions" />
-            <el-tab-pane label="缴费记录" name="payments" />
-          </el-tabs>
-        </template>
+      <div class="main-card">
+        <el-tabs v-model="activeTab" @tab-change="handleTabChange" class="custom-tabs">
+          <el-tab-pane name="prescriptions">
+            <template #label>
+              <span class="tab-label">
+                <el-icon><Document /></el-icon>
+                我的处方单
+              </span>
+            </template>
+          </el-tab-pane>
+          <el-tab-pane name="payments">
+            <template #label>
+              <span class="tab-label">
+                <el-icon><Wallet /></el-icon>
+                缴费记录
+              </span>
+            </template>
+          </el-tab-pane>
+        </el-tabs>
 
-        <div v-loading="loading">
+        <div v-loading="loading" class="tab-content">
           <!-- 处方列表 -->
           <template v-if="activeTab === 'prescriptions'">
             <el-empty v-if="prescriptions.length === 0 && !loading" description="暂无处方记录" />
             <el-table v-else :data="prescriptions" stripe style="width:100%">
-              <el-table-column prop="id" label="处方编号" width="90" />
-              <el-table-column prop="doctorName" label="开方医生" width="100" />
-              <el-table-column prop="diagnosisResult" label="诊断结果" min-width="160" show-overflow-tooltip />
-              <el-table-column label="处方金额" width="110">
-                <template #default="{ row }">¥{{ row.totalMoney?.toFixed(2) }}</template>
+              <el-table-column prop="id" label="处方编号" min-width="80" />
+              <el-table-column prop="doctorName" label="开方医生" min-width="90" />
+              <el-table-column prop="diagnosisResult" label="诊断结果" min-width="150" show-overflow-tooltip />
+              <el-table-column label="处方金额" min-width="100">
+                <template #default="{ row }">
+                  <span class="amount">¥{{ row.totalMoney?.toFixed(2) }}</span>
+                </template>
               </el-table-column>
-              <el-table-column label="状态" width="90">
+              <el-table-column label="状态" min-width="80">
                 <template #default="{ row }">
                   <el-tag :type="getPrescriptionStatusTag(row.prescriptionStatus).type" size="small">
                     {{ getPrescriptionStatusTag(row.prescriptionStatus).text }}
                   </el-tag>
                 </template>
               </el-table-column>
-              <el-table-column prop="prescriptionTime" label="开方时间" width="170" />
-              <el-table-column label="操作" width="100" fixed="right">
+              <el-table-column prop="prescriptionTime" label="开方时间" min-width="150" />
+              <el-table-column label="操作" min-width="90">
                 <template #default="{ row }">
                   <el-button type="primary" size="small" text @click="showDetail(row)">
                     查看详情
@@ -152,31 +170,29 @@ function getPayTypeText(type: number) {
           <template v-if="activeTab === 'payments'">
             <el-empty v-if="payOrders.length === 0 && !loading" description="暂无缴费记录" />
             <el-table v-else :data="payOrders" stripe style="width:100%">
-              <el-table-column prop="id" label="缴费单编号" width="100" />
-              <el-table-column prop="doctorName" label="接诊医生" width="100" />
-              <el-table-column prop="deptName" label="科室" width="100" />
-              <el-table-column label="金额" width="100">
+              <el-table-column prop="id" label="缴费单编号" min-width="90" />
+              <el-table-column prop="doctorName" label="接诊医生" min-width="90" />
+              <el-table-column prop="deptName" label="科室" min-width="80" />
+              <el-table-column label="金额" min-width="90">
                 <template #default="{ row }">
-                  <span style="font-weight:700;color:#f56c6c">¥{{ row.totalFee?.toFixed(2) }}</span>
+                  <span class="amount-danger">¥{{ row.totalFee?.toFixed(2) }}</span>
                 </template>
               </el-table-column>
-              <el-table-column label="支付方式" width="90">
+              <el-table-column label="支付方式" min-width="80">
                 <template #default="{ row }">{{ getPayTypeText(row.payType) }}</template>
               </el-table-column>
-              <el-table-column label="状态" width="90">
+              <el-table-column label="状态" min-width="80">
                 <template #default="{ row }">
                   <el-tag :type="getPayStatusTag(row.payStatus).type" size="small">
                     {{ getPayStatusTag(row.payStatus).text }}
                   </el-tag>
                 </template>
               </el-table-column>
-              <el-table-column prop="payTime" label="缴费时间" width="170">
-                <template #default="{ row }">
-                  {{ row.payTime || '--' }}
-                </template>
+              <el-table-column prop="payTime" label="缴费时间" min-width="150">
+                <template #default="{ row }">{{ row.payTime || '--' }}</template>
               </el-table-column>
-              <el-table-column prop="createTime" label="创建时间" width="170" />
-              <el-table-column label="操作" width="100" fixed="right">
+              <el-table-column prop="createTime" label="创建时间" min-width="150" />
+              <el-table-column label="操作" min-width="90">
                 <template #default="{ row }">
                   <el-button
                     v-if="row.payStatus === 0"
@@ -186,29 +202,31 @@ function getPayTypeText(type: number) {
                   >
                     去缴费
                   </el-button>
-                  <span v-else style="color:#c0c4cc">--</span>
+                  <span v-else style="color:#cbd5e1">--</span>
                 </template>
               </el-table-column>
             </el-table>
           </template>
         </div>
-      </el-card>
+      </div>
 
       <!-- 处方详情弹窗 -->
       <el-dialog v-model="detailVisible" title="处方详情" width="650px" destroy-on-close>
         <div v-loading="detailLoading">
           <template v-if="detailPrescription">
-            <el-descriptions :column="2" border size="small">
+            <el-descriptions :column="2" border size="small" class="desc-block">
               <el-descriptions-item label="处方编号">{{ detailPrescription.id }}</el-descriptions-item>
               <el-descriptions-item label="开方医生">{{ detailPrescription.doctorName }}</el-descriptions-item>
               <el-descriptions-item label="诊断结果" :span="2">{{ detailPrescription.diagnosisResult }}</el-descriptions-item>
               <el-descriptions-item label="开方时间">{{ detailPrescription.prescriptionTime }}</el-descriptions-item>
               <el-descriptions-item label="处方金额">
-                <span style="color:#f56c6c;font-weight:700">¥{{ detailPrescription.totalMoney?.toFixed(2) }}</span>
+                <span class="amount-danger">¥{{ detailPrescription.totalMoney?.toFixed(2) }}</span>
               </el-descriptions-item>
             </el-descriptions>
 
-            <el-divider content-position="left">药品明细</el-divider>
+            <el-divider content-position="left">
+              <span style="font-weight:600;font-size:14px">药品明细</span>
+            </el-divider>
 
             <el-table v-if="detailPrescription.items?.length" :data="detailPrescription.items" stripe size="small">
               <el-table-column type="index" label="序号" width="60" />
@@ -223,7 +241,7 @@ function getPayTypeText(type: number) {
                 <template #default="{ row }">¥{{ (row.drugPrice * row.drugNum).toFixed(2) }}</template>
               </el-table-column>
             </el-table>
-            <el-empty v-else description="无药品明细" />
+            <el-empty v-else description="无药品明细" :image-size="60" />
           </template>
         </div>
       </el-dialog>
@@ -234,26 +252,97 @@ function getPayTypeText(type: number) {
 <style scoped>
 .prescriptions-page {
   min-height: 100vh;
-  background: #f4f6fb;
-  padding-bottom: 40px;
+  background: var(--h-bg);
+  display: flex;
+  flex-direction: column;
 }
-.topbar {
+
+.page-header {
+  background: #fff;
+  border-bottom: 1px solid var(--h-border);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.page-header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 28px;
-  background: #fff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-  margin-bottom: 20px;
 }
-.topbar-title {
+
+.page-title {
   font-size: 18px;
   font-weight: 700;
-  color: #303133;
+  color: var(--h-text);
+  margin: 0;
 }
+
 .content {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 20px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.main-card {
+  background: #fff;
+  border-radius: var(--h-radius-md);
+  border: 1px solid var(--h-border);
+  padding: 24px;
+  box-shadow: var(--h-shadow);
+}
+
+.custom-tabs {
+  margin-bottom: 20px;
+}
+
+.tab-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tab-content {
+  min-height: 200px;
+}
+
+.amount {
+  font-weight: 600;
+  color: var(--h-text);
+}
+
+.amount-danger {
+  font-weight: 700;
+  color: var(--h-danger);
+}
+
+.desc-block {
+  margin-bottom: 8px;
+}
+
+@media (max-width: 768px) {
+  .page-header-inner {
+    padding: 0 16px;
+    height: 52px;
+  }
+
+  .page-title {
+    font-size: 16px;
+  }
+
+  .content {
+    padding: 18px;
+  }
+
+  .main-card {
+    padding: 18px 14px;
+    border-radius: var(--h-radius);
+  }
+
+  .custom-tabs {
+    margin-bottom: 12px;
+  }
 }
 </style>

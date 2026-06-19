@@ -187,39 +187,47 @@ function goBack() {
 
 <template>
   <div class="profile-page">
-    <div class="container">
-      <div class="topbar">
-        <el-button link @click="goBack">返回首页</el-button>
-        <h2>个人中心</h2>
+    <header class="page-header">
+      <div class="page-header-inner">
+        <el-button text @click="goBack" class="back-btn">
+          <el-icon><ArrowLeft /></el-icon>
+          <span>返回首页</span>
+        </el-button>
+        <h1 class="page-title">个人中心</h1>
         <div></div>
       </div>
+    </header>
 
-      <el-card v-loading="loading" shadow="never" class="card">
-        <template #header>
-          <div class="card-head">
-            <el-avatar :size="48" style="background:#409eff">{{
-              profile.realName?.charAt(0) || user?.realName?.charAt(0) || 'U'
-            }}</el-avatar>
-            <div>
-              <div class="name">{{ profile.realName || user?.realName || '---' }}</div>
-              <div class="sub">
-                账号：{{ profile.username || user?.username }}
-                <el-tag size="small" type="success" style="margin-left:8px">{{
-                  profile.roleName || user?.roleName
-                }}</el-tag>
+    <div class="content">
+      <div class="profile-card" v-loading="loading">
+        <!-- 用户信息头部 -->
+        <div class="profile-banner">
+          <div class="banner-bg"></div>
+          <div class="banner-content">
+            <div class="profile-avatar">
+              <el-avatar :size="80" class="avatar">
+                {{ profile.realName?.charAt(0) || user?.realName?.charAt(0) || 'U' }}
+              </el-avatar>
+            </div>
+            <div class="profile-info">
+              <h2 class="profile-name">{{ profile.realName || user?.realName || '---' }}</h2>
+              <div class="profile-meta">
+                <span class="meta-item">
+                  <el-icon><User /></el-icon>
+                  账号：{{ profile.username || user?.username }}
+                </span>
+                <el-tag size="small" type="success" effect="dark" round>
+                  {{ profile.roleName || user?.roleName }}
+                </el-tag>
               </div>
             </div>
           </div>
-        </template>
+        </div>
 
-        <el-tabs v-model="activeTab">
+        <!-- 标签页 -->
+        <el-tabs v-model="activeTab" class="profile-tabs">
           <el-tab-pane label="基础资料" name="base">
-            <el-form
-              :model="baseForm"
-              :rules="baseRules"
-              label-width="96px"
-              class="profile-form"
-            >
+            <el-form :model="baseForm" :rules="baseRules" label-width="110px" class="profile-form">
               <el-form-item label="真实姓名" prop="realName">
                 <el-input v-model="baseForm.realName" placeholder="请输入真实姓名" />
               </el-form-item>
@@ -230,20 +238,15 @@ function goBack() {
                 <el-input v-model="baseForm.idCard" placeholder="选填" />
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" @click="submitBase">保存修改</el-button>
+                <el-button type="primary" @click="submitBase" class="save-btn">保存修改</el-button>
               </el-form-item>
             </el-form>
           </el-tab-pane>
 
           <el-tab-pane v-if="profile.roleCode === 'patient'" label="患者档案" name="patient">
-            <el-form label-width="96px" class="profile-form">
+            <el-form label-width="110px" class="profile-form">
               <el-form-item label="年龄">
-                <el-input-number
-                  v-model="patientForm.age"
-                  :min="0"
-                  :max="150"
-                  placeholder="请输入年龄"
-                />
+                <el-input-number v-model="patientForm.age" :min="0" :max="150" placeholder="请输入年龄" />
               </el-form-item>
               <el-form-item label="性别">
                 <el-radio-group v-model="patientForm.gender">
@@ -255,31 +258,21 @@ function goBack() {
                 <el-input v-model="patientForm.address" placeholder="请输入住址" />
               </el-form-item>
               <el-form-item label="既往病史">
-                <el-input
-                  v-model="patientForm.pastMedical"
-                  type="textarea"
-                  :rows="3"
-                  placeholder="请输入既往病史（选填）"
-                />
+                <el-input v-model="patientForm.pastMedical" type="textarea" :rows="3" placeholder="请输入既往病史（选填）" />
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" @click="submitPatient">保存档案</el-button>
+                <el-button type="primary" @click="submitPatient" class="save-btn">保存档案</el-button>
               </el-form-item>
             </el-form>
           </el-tab-pane>
 
           <el-tab-pane v-if="profile.roleCode === 'doctor'" label="医生信息" name="doctor">
-            <el-form label-width="96px" class="profile-form">
+            <el-form label-width="110px" class="profile-form">
               <el-form-item label="职称">
                 <el-input v-model="doctorForm.title" placeholder="请输入职称，如：主治医师、副主任医师等" />
               </el-form-item>
               <el-form-item label="专业技能">
-                <el-input
-                  v-model="doctorForm.skill"
-                  type="textarea"
-                  :rows="3"
-                  placeholder="请输入专业技能，如：擅长呼吸系统疾病诊治"
-                />
+                <el-input v-model="doctorForm.skill" type="textarea" :rows="3" placeholder="请输入专业技能" />
               </el-form-item>
               <el-form-item label="在岗状态">
                 <el-radio-group v-model="doctorForm.workStatus">
@@ -293,19 +286,13 @@ function goBack() {
                 <el-tag v-else type="info">未分配科室，请联系管理员分配</el-tag>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" @click="submitDoctor">保存信息</el-button>
+                <el-button type="primary" @click="submitDoctor" class="save-btn">保存信息</el-button>
               </el-form-item>
             </el-form>
           </el-tab-pane>
 
           <el-tab-pane label="修改密码" name="pwd">
-            <el-form
-              ref="pwdFormRef"
-              :model="pwdForm"
-              :rules="pwdRules"
-              label-width="96px"
-              class="profile-form"
-            >
+            <el-form ref="pwdFormRef" :model="pwdForm" :rules="pwdRules" label-width="110px" class="profile-form">
               <el-form-item label="原密码" prop="oldPassword">
                 <el-input v-model="pwdForm.oldPassword" type="password" show-password />
               </el-form-item>
@@ -316,12 +303,12 @@ function goBack() {
                 <el-input v-model="pwdForm.confirmPassword" type="password" show-password />
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" :loading="pwdLoading" @click="submitPwd">提交修改</el-button>
+                <el-button type="primary" :loading="pwdLoading" @click="submitPwd" class="save-btn">提交修改</el-button>
               </el-form-item>
             </el-form>
           </el-tab-pane>
         </el-tabs>
-      </el-card>
+      </div>
     </div>
   </div>
 </template>
@@ -329,45 +316,263 @@ function goBack() {
 <style scoped>
 .profile-page {
   min-height: 100vh;
-  background: #f4f6fb;
-  padding: 24px 12px;
-  box-sizing: border-box;
+  background: linear-gradient(180deg, #f5f8ff 0%, #f0f4ff 50%, #fafbfc 100%);
+  display: flex;
+  flex-direction: column;
 }
-.container {
-  max-width: 1000px;
-  margin: 0 auto;
+
+.page-header {
+  background: #fff;
+  border-bottom: 1px solid var(--h-border);
+  position: relative;
+  flex-shrink: 0;
 }
-.topbar {
+
+.page-header-inner {
+  padding: 0 24px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
 }
-.topbar h2 {
+
+.back-btn {
+  color: var(--h-text-secondary);
+  transition: all 0.25s ease;
+}
+
+.back-btn:hover {
+  color: var(--h-primary);
+}
+
+.page-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--h-text);
   margin: 0;
-  font-size: 20px;
-  color: #1f2d3d;
 }
-.card {
-  border-radius: 8px;
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  padding: 32px 24px 60px;
 }
-.card-head {
+
+.profile-card {
+  width: 100%;
+  max-width: 780px;
+  background: #fff;
+  border-radius: 20px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow:
+    0 4px 6px rgba(15, 23, 42, 0.03),
+    0 12px 28px rgba(59, 130, 246, 0.06);
+  overflow: hidden;
+}
+
+/* ========== 用户信息横幅 ========== */
+.profile-banner {
+  position: relative;
+  overflow: hidden;
+}
+
+.banner-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 120%, rgba(147, 197, 253, 0.4), transparent 55%),
+    radial-gradient(circle at 85% 20%, rgba(125, 211, 252, 0.35), transparent 50%),
+    linear-gradient(135deg, #60a5fa 0%, #3b82f6 40%, #0ea5e9 100%);
+}
+
+.banner-content {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 40px 36px 34px;
+}
+
+.profile-avatar {
+  flex-shrink: 0;
+}
+
+.avatar {
+  background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%) !important;
+  color: #3b82f6 !important;
+  font-weight: 800;
+  font-size: 30px;
+  box-shadow:
+    0 4px 16px rgba(59, 130, 246, 0.2),
+    inset 0 2px 4px rgba(255, 255, 255, 0.8);
+  border: 3px solid rgba(255, 255, 255, 0.9);
+}
+
+.profile-info {
+  flex: 1;
+}
+
+.profile-name {
+  font-size: 26px;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 10px;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  letter-spacing: 0.02em;
+}
+
+.profile-meta {
   display: flex;
   align-items: center;
   gap: 14px;
+  flex-wrap: wrap;
 }
-.card-head .name {
-  font-size: 18px;
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.88);
+  font-weight: 500;
+}
+
+.meta-item .el-icon {
+  opacity: 0.85;
+}
+
+/* ========== 标签页 ========== */
+.profile-tabs {
+  padding: 0 32px;
+}
+
+.profile-tabs :deep(.el-tabs__header) {
+  margin-bottom: 28px;
+}
+
+.profile-tabs :deep(.el-tabs__nav-wrap::after) {
+  height: 1px;
+  background-color: #e2e8f0;
+}
+
+.profile-tabs :deep(.el-tabs__item) {
+  font-size: 15px;
   font-weight: 600;
-  color: #1f2d3d;
+  color: #64748b;
+  height: 48px;
+  line-height: 48px;
+  padding: 0 20px;
+  transition: all 0.25s ease;
 }
-.card-head .sub {
-  margin-top: 4px;
-  color: #909399;
-  font-size: 13px;
+
+.profile-tabs :deep(.el-tabs__item.is-active) {
+  color: #3b82f6;
+  font-weight: 700;
 }
+
+.profile-tabs :deep(.el-tabs__active-bar) {
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #60a5fa, #3b82f6);
+}
+
+.profile-tabs :deep(.el-tabs__content) {
+  padding: 0 4px 32px;
+}
+
+/* ========== 表单 ========== */
 .profile-form {
   max-width: 560px;
-  padding-top: 16px;
+}
+
+.profile-form :deep(.el-form-item__label) {
+  font-weight: 600;
+  color: #334155;
+  font-size: 14px;
+}
+
+.profile-form :deep(.el-input__wrapper),
+.profile-form :deep(.el-textarea__inner) {
+  border-radius: 10px;
+  transition: all 0.25s ease;
+}
+
+.profile-form :deep(.el-input__wrapper:hover),
+.profile-form :deep(.el-textarea__inner:hover) {
+  box-shadow: 0 0 0 1px #93c5fd;
+}
+
+.profile-form :deep(.el-input__wrapper:focus-within),
+.profile-form :deep(.el-textarea__inner:focus) {
+  box-shadow: 0 0 0 2px #7dd3fc, 0 0 0 5px rgba(125, 211, 252, 0.2);
+}
+
+.save-btn {
+  min-width: 140px;
+  height: 42px;
+  border-radius: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  background: linear-gradient(135deg, #3b82f6, #0ea5e9);
+  border: none;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.25);
+  transition: all 0.3s ease;
+}
+
+.save-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.35);
+}
+
+.save-btn:active {
+  transform: translateY(0);
+}
+
+/* ========== 响应式 ========== */
+@media (max-width: 768px) {
+  .page-header-inner {
+    padding: 0 16px;
+    height: 52px;
+  }
+
+  .page-title {
+    font-size: 16px;
+  }
+
+  .content {
+    padding: 20px 16px 48px;
+  }
+
+  .profile-card {
+    max-width: 100%;
+    border-radius: 16px;
+  }
+
+  .banner-content {
+    gap: 16px;
+    padding: 28px 20px 24px;
+  }
+
+  .avatar {
+    font-size: 24px !important;
+  }
+
+  .profile-name {
+    font-size: 21px;
+  }
+
+  .meta-item {
+    font-size: 13px;
+  }
+
+  .profile-tabs {
+    padding: 0 20px;
+  }
+
+  .profile-form {
+    max-width: 100%;
+  }
 }
 </style>

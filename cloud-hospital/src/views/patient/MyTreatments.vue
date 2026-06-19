@@ -33,68 +33,89 @@ function getStatusTag(registerStatus: number) {
 
 <template>
   <div class="treatments-page">
-    <div class="topbar">
-      <el-button @click="router.push('/patient/home')" :icon="'ArrowLeft'">返回首页</el-button>
-      <span class="topbar-title">历史就诊记录</span>
-      <el-button type="primary" @click="loadList">刷新</el-button>
-    </div>
+    <header class="page-header">
+      <div class="page-header-inner">
+        <el-button text @click="router.push('/patient/home')">
+          <el-icon><ArrowLeft /></el-icon>
+          <span>返回首页</span>
+        </el-button>
+        <h1 class="page-title">历史就诊记录</h1>
+        <el-button text type="primary" @click="loadList">
+          <el-icon><Refresh /></el-icon>
+          <span>刷新</span>
+        </el-button>
+      </div>
+    </header>
 
     <div class="content">
-      <el-card v-loading="loading">
+      <div v-loading="loading">
         <el-empty v-if="list.length === 0 && !loading" description="暂无就诊记录" />
 
-        <div v-else>
+        <div v-else class="timeline-wrapper">
           <el-timeline>
             <el-timeline-item
               v-for="item in list"
               :key="item.id"
               :timestamp="item.treatmentTime || item.createTime"
               placement="top"
-              color="#409eff"
+              color="#2563EB"
+              size="large"
             >
-              <el-card shadow="hover">
-                <template #header>
-                  <div style="display:flex;justify-content:space-between;align-items:center">
-                    <span>
-                      接诊医生：
-                      <el-tag type="primary" size="small">{{ item.doctorName }}</el-tag>
-                      <span style="margin-left:8px;color:#909399">{{ item.deptName }}</span>
-                    </span>
-                    <el-tag :type="getStatusTag(item.registerStatus).type" size="small">
-                      {{ getStatusTag(item.registerStatus).text }}
-                    </el-tag>
+              <div class="treatment-card">
+                <div class="treatment-header">
+                  <div class="treatment-doctor">
+                    <el-avatar :size="40" class="doctor-avatar">
+                      {{ item.doctorName?.charAt(0) }}
+                    </el-avatar>
+                    <div>
+                      <div class="doctor-name">
+                        {{ item.doctorName }}
+                        <span class="doctor-dept">{{ item.deptName }}</span>
+                      </div>
+                      <div class="treatment-meta">
+                        {{ item.registerDate }} {{ item.timeSlot }}
+                      </div>
+                    </div>
                   </div>
-                </template>
-
-                <el-descriptions :column="2" border size="small">
-                  <el-descriptions-item label="就诊日期">{{ item.registerDate }}</el-descriptions-item>
-                  <el-descriptions-item label="就诊时段">{{ item.timeSlot }}</el-descriptions-item>
-                  <el-descriptions-item label="挂号费">¥{{ item.registerFee?.toFixed(2) }}</el-descriptions-item>
-                  <el-descriptions-item label="挂号编号">{{ item.registerId }}</el-descriptions-item>
-                </el-descriptions>
+                  <el-tag :type="getStatusTag(item.registerStatus).type" size="small">
+                    {{ getStatusTag(item.registerStatus).text }}
+                  </el-tag>
+                </div>
 
                 <el-divider />
 
                 <div class="treatment-detail">
-                  <div class="detail-item">
-                    <span class="label">病情描述：</span>
-                    <span>{{ item.diseaseDesc || '暂无' }}</span>
+                  <div class="detail-row">
+                    <span class="detail-label">挂号费</span>
+                    <span class="detail-value">¥{{ item.registerFee?.toFixed(2) }}</span>
                   </div>
-                  <div class="detail-item">
-                    <span class="label">诊断结果：</span>
-                    <el-tag type="danger" v-if="item.diagnosisResult">{{ item.diagnosisResult }}</el-tag>
-                    <span v-else style="color:#c0c4cc">暂无</span>
+                  <div class="detail-row">
+                    <span class="detail-label">挂号编号</span>
+                    <span class="detail-value">{{ item.registerId }}</span>
                   </div>
-                  <div class="detail-item">
-                    <span class="label">医嘱：</span>
-                    <span>{{ item.doctorAdvice || '暂无' }}</span>
+                  <div class="detail-row">
+                    <span class="detail-label">病情描述</span>
+                    <span class="detail-value">{{ item.diseaseDesc || '暂无' }}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">诊断结果</span>
+                    <span class="detail-value">
+                      <el-tag v-if="item.diagnosisResult" type="danger" effect="plain">
+                        {{ item.diagnosisResult }}
+                      </el-tag>
+                      <span v-else style="color: #cbd5e1">暂无</span>
+                    </span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">医嘱</span>
+                    <span class="detail-value">{{ item.doctorAdvice || '暂无' }}</span>
                   </div>
                 </div>
-              </el-card>
+              </div>
             </el-timeline-item>
           </el-timeline>
         </div>
-      </el-card>
+      </div>
     </div>
   </div>
 </template>
@@ -102,38 +123,139 @@ function getStatusTag(registerStatus: number) {
 <style scoped>
 .treatments-page {
   min-height: 100vh;
-  background: #f4f6fb;
-  padding-bottom: 40px;
+  background: var(--h-bg);
+  display: flex;
+  flex-direction: column;
 }
-.topbar {
+
+.page-header {
+  background: #fff;
+  border-bottom: 1px solid var(--h-border);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  flex-shrink: 0;
+}
+
+.page-header-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 28px;
-  background: #fff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-  margin-bottom: 20px;
 }
-.topbar-title {
+
+.page-title {
   font-size: 18px;
   font-weight: 700;
-  color: #303133;
+  color: var(--h-text);
+  margin: 0;
 }
+
 .content {
   max-width: 900px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 24px 24px 60px;
 }
-.treatment-detail {
-  padding: 8px 0;
+
+.timeline-wrapper {
+  background: #fff;
+  border-radius: var(--h-radius-md);
+  border: 1px solid var(--h-border);
+  padding: 32px 28px;
+  box-shadow: var(--h-shadow);
 }
-.detail-item {
-  margin-bottom: 8px;
-  line-height: 1.8;
+
+.treatment-card {
+  animation: fadeIn 0.3s ease;
 }
-.detail-item .label {
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.treatment-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.treatment-doctor {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.doctor-avatar {
+  background: linear-gradient(135deg, #2563EB, #3B82F6) !important;
+  color: #fff;
   font-weight: 600;
-  color: #606266;
-  margin-right: 4px;
+}
+
+.doctor-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--h-text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.doctor-dept {
+  font-size: 12px;
+  color: var(--h-text-tertiary);
+  font-weight: 400;
+}
+
+.treatment-meta {
+  font-size: 12px;
+  color: var(--h-text-tertiary);
+  margin-top: 2px;
+}
+
+.treatment-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.detail-row {
+  display: flex;
+  gap: 12px;
+  line-height: 1.6;
+}
+
+.detail-label {
+  font-weight: 600;
+  color: var(--h-text-secondary);
+  font-size: 13px;
+  min-width: 70px;
+  flex-shrink: 0;
+}
+
+.detail-value {
+  font-size: 13px;
+  color: var(--h-text);
+}
+
+@media (max-width: 768px) {
+  .page-header-inner {
+    padding: 0 16px;
+  }
+
+  .page-title {
+    font-size: 16px;
+  }
+
+  .content {
+    padding: 16px 16px 40px;
+  }
+
+  .timeline-wrapper {
+    padding: 20px 16px;
+  }
 }
 </style>

@@ -77,6 +77,11 @@ function go(path: string) {
 </template>
 
 <style scoped>
+.care-quick-panel {
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+}
+
 .panel-header {
   display: flex;
   align-items: center;
@@ -84,24 +89,59 @@ function go(path: string) {
 }
 
 .panel-title {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 800;
   color: #1f2d3d;
 }
 
 .panel-subtitle {
-  margin-top: 4px;
-  font-size: 13px;
-  color: #8492a6;
+  margin-top: 3px;
+  font-size: 12px;
+  color: #94a3b8;
 }
 
+/* ========== 快捷操作网格（基础布局） ========== */
+.care-quick-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+/* ========== 操作卡片（基础布局） ========== */
 .care-quick-action {
   font-family: inherit;
   text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.care-quick-action:hover {
+  transform: translateY(-2px);
+  border-color: #93c5fd;
+  box-shadow: 0 6px 18px rgba(59, 130, 246, 0.1);
 }
 
 .care-quick-action span {
   display: flex;
   flex-direction: column;
+}
+
+.care-quick-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1f2d3d;
+}
+
+.care-quick-desc {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #64748b;
 }
 </style>

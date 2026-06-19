@@ -82,6 +82,10 @@ export function markCareModePrompted(userId?: number | string | null) {
 export function applyCareMode(enabled: boolean, config?: CareModeConfig | null) {
   const finalConfig = normalizeCareConfig(config || getCareModeRuntimeConfig())
   const body = document.body
+  const html = document.documentElement
+
+  /* 添加过渡标记，让所有属性平滑变化 */
+  html.classList.add('care-mode-transitioning')
 
   body.classList.toggle('care-mode', enabled)
   body.dataset.careMode = enabled ? 'true' : 'false'
@@ -90,6 +94,11 @@ export function applyCareMode(enabled: boolean, config?: CareModeConfig | null) 
   body.dataset.careSimplify = String(finalConfig.simplifyMenuEnabled)
   body.dataset.careFocus = String(finalConfig.focusEnhancedEnabled)
   body.style.setProperty('--care-font-scale', String(finalConfig.fontScale))
+
+  /* 过渡完成后移除标记（400ms > 350ms transition duration） */
+  window.setTimeout(() => {
+    html.classList.remove('care-mode-transitioning')
+  }, 400)
 }
 
 export function applyCareModeForCurrentUser(config?: CareModeConfig | null) {

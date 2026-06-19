@@ -367,13 +367,6 @@ const prescriptionTotal = computed(() => {
               <el-table-column prop="patientPhone" label="手机号" width="130" />
               <el-table-column prop="deptName" label="科室" width="100" />
               <el-table-column prop="timeSlot" label="就诊时段" width="160" />
-              <el-table-column label="到诊状态" width="110">
-                <template #default="{ row }">
-                  <el-tag :type="row.arrivalStatus === 1 ? 'success' : 'info'">
-                    {{ row.arrivalStatus === 1 ? '已到院' : '未到院' }}
-                  </el-tag>
-                </template>
-              </el-table-column>
               <el-table-column label="挂号费" width="90">
                 <template #default="{ row }">¥{{ row.registerFee?.toFixed(2) }}</template>
               </el-table-column>
