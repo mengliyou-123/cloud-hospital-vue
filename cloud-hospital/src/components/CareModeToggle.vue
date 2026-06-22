@@ -43,11 +43,6 @@ function onChange(value: boolean | string | number) {
   } else {
     ElMessage.info('已关闭关怀模式')
   }
-
-  /* 等待过渡动画完成（400ms）后再刷新，避免布局抖动 */
-  window.setTimeout(() => {
-    window.location.reload()
-  }, 420)
 }
 
 onMounted(loadConfig)
@@ -55,7 +50,8 @@ onMounted(loadConfig)
 
 <template>
   <div class="care-toggle" v-if="config?.enabled !== false">
-    <span class="care-label">关怀模式</span>
+    <el-icon class="care-icon"><HelpFilled /></el-icon>
+    <span class="care-label">关怀</span>
     <el-switch
       v-model="enabled"
       :loading="loading"
@@ -69,30 +65,35 @@ onMounted(loadConfig)
 
 <style scoped>
 .care-toggle {
+  min-height: 38px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: var(--h-card);
+  border: 1px solid var(--h-border);
   display: flex;
   align-items: center;
-  gap: 8px;
-  min-height: 34px;
-  padding: 4px 10px;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  gap: 7px;
+  color: var(--h-text-secondary);
+  white-space: nowrap;
+}
+
+.care-icon {
+  color: var(--h-primary);
 }
 
 .care-label {
-  color: #fff;
+  color: var(--h-text-secondary);
   font-size: 13px;
-  white-space: nowrap;
-  font-weight: 700;
+  font-weight: 800;
 }
 
-body.care-mode .care-toggle {
-  min-height: 42px;
-  padding: 6px 14px;
-  background: rgba(255, 255, 255, 0.26);
-}
+@media (max-width: 980px) {
+  .care-label {
+    display: none;
+  }
 
-body.care-mode .care-label {
-  font-size: 16px;
+  .care-toggle {
+    padding: 0 8px;
+  }
 }
 </style>

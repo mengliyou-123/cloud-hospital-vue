@@ -32,26 +32,27 @@ function getStatusTag(registerStatus: number) {
 </script>
 
 <template>
-  <div class="treatments-page">
-    <header class="page-header">
-      <div class="page-header-inner">
+  <div class="page-shell treatments-page">
+    <div class="page-toolbar">
+      <div class="toolbar-left">
         <el-button text @click="router.push('/patient/home')">
           <el-icon><ArrowLeft /></el-icon>
           <span>返回首页</span>
         </el-button>
-        <h1 class="page-title">历史就诊记录</h1>
+      </div>
+      <div class="toolbar-right">
         <el-button text type="primary" @click="loadList">
           <el-icon><Refresh /></el-icon>
           <span>刷新</span>
         </el-button>
       </div>
-    </header>
+    </div>
 
-    <div class="content">
+    <div class="page-card timeline-wrapper">
       <div v-loading="loading">
         <el-empty v-if="list.length === 0 && !loading" description="暂无就诊记录" />
 
-        <div v-else class="timeline-wrapper">
+        <div v-else>
           <el-timeline>
             <el-timeline-item
               v-for="item in list"
@@ -122,50 +123,13 @@ function getStatusTag(registerStatus: number) {
 
 <style scoped>
 .treatments-page {
-  min-height: 100vh;
-  background: var(--h-bg);
   display: flex;
   flex-direction: column;
-}
-
-.page-header {
-  background: #fff;
-  border-bottom: 1px solid var(--h-border);
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  flex-shrink: 0;
-}
-
-.page-header-inner {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 0 24px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.page-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--h-text);
-  margin: 0;
-}
-
-.content {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 24px 24px 60px;
+  gap: 16px;
 }
 
 .timeline-wrapper {
-  background: #fff;
-  border-radius: var(--h-radius-md);
-  border: 1px solid var(--h-border);
-  padding: 32px 28px;
-  box-shadow: var(--h-shadow);
+  padding: 28px;
 }
 
 .treatment-card {
@@ -242,18 +206,6 @@ function getStatusTag(registerStatus: number) {
 }
 
 @media (max-width: 768px) {
-  .page-header-inner {
-    padding: 0 16px;
-  }
-
-  .page-title {
-    font-size: 16px;
-  }
-
-  .content {
-    padding: 16px 16px 40px;
-  }
-
   .timeline-wrapper {
     padding: 20px 16px;
   }

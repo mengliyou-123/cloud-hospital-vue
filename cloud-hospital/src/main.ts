@@ -7,8 +7,10 @@ import App from './App.vue'
 import router from './router'
 import './style.css'
 import './styles/care-mode.css'
+import { initTheme } from './utils/theme'
 import { applyCareModeForCurrentUser } from './utils/careMode'
 
+initTheme()
 applyCareModeForCurrentUser()
 
 const app = createApp(App)

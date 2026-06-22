@@ -1,4 +1,5 @@
 import type { CareModeConfig, LoginUser } from '../types'
+import { normalizeThemeKey, setTheme, getTheme, isDarkTheme } from './theme'
 
 const CARE_MODE_ENABLED_PREFIX = 'cloud_hospital_care_mode_enabled_user_'
 const CARE_MODE_PROMPT_PREFIX = 'cloud_hospital_care_mode_prompted_user_'
@@ -12,8 +13,8 @@ const DEFAULT_CONFIG: CareModeConfig = {
   simplifyMenuEnabled: true,
   focusEnhancedEnabled: true,
   quickPanelEnabled: true,
-  fontScale: 1.12,
-  theme: 'warm'
+  fontScale: 1.18,
+  theme: 'mint-care'
 }
 
 function getStoredUser(): LoginUser | null {
@@ -32,14 +33,14 @@ function userKey(prefix: string, userId?: number | string | null): string {
 }
 
 export function normalizeCareConfig(config?: Partial<CareModeConfig> | null): CareModeConfig {
+  const rawScale = typeof config?.fontScale === 'number' ? config.fontScale : DEFAULT_CONFIG.fontScale
+  const fontScale = Math.min(Math.max(rawScale, 1.12), 1.35)
+
   return {
     ...DEFAULT_CONFIG,
     ...(config || {}),
-    fontScale:
-      typeof config?.fontScale === 'number' && config.fontScale >= 1
-        ? config.fontScale
-        : DEFAULT_CONFIG.fontScale,
-    theme: config?.theme || DEFAULT_CONFIG.theme
+    fontScale,
+    theme: normalizeThemeKey(config?.theme || DEFAULT_CONFIG.theme)
   }
 }
 
@@ -84,8 +85,14 @@ export function applyCareMode(enabled: boolean, config?: CareModeConfig | null) 
   const body = document.body
   const html = document.documentElement
 
-  /* 添加过渡标记，让所有属性平滑变化 */
   html.classList.add('care-mode-transitioning')
+
+  if (enabled) {
+    const currentTheme = getTheme()
+    if (!isDarkTheme(currentTheme)) {
+      setTheme(finalConfig.theme)
+    }
+  }
 
   body.classList.toggle('care-mode', enabled)
   body.dataset.careMode = enabled ? 'true' : 'false'
@@ -95,10 +102,9 @@ export function applyCareMode(enabled: boolean, config?: CareModeConfig | null) 
   body.dataset.careFocus = String(finalConfig.focusEnhancedEnabled)
   body.style.setProperty('--care-font-scale', String(finalConfig.fontScale))
 
-  /* 过渡完成后移除标记（400ms > 350ms transition duration） */
   window.setTimeout(() => {
     html.classList.remove('care-mode-transitioning')
-  }, 400)
+  }, 260)
 }
 
 export function applyCareModeForCurrentUser(config?: CareModeConfig | null) {
@@ -137,7 +143,7 @@ export function speakCareModeText(text: string, enabled: boolean) {
     window.speechSynthesis.cancel()
     const utterance = new SpeechSynthesisUtterance(text)
     utterance.lang = 'zh-CN'
-    utterance.rate = 0.92
+    utterance.rate = 0.9
     utterance.pitch = 1
     window.speechSynthesis.speak(utterance)
   } catch {

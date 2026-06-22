@@ -494,10 +494,10 @@ onMounted(() => {
   border-left: 3px solid #409eff;
 }
 .empty-tip {
-  color: #999;
+  color: var(--h-text-tertiary);
   padding: 30px;
   text-align: center;
-  background: #fafafa;
+  background: var(--h-primary-bg);
   border-radius: 4px;
 }
 .assign-cell {

@@ -357,13 +357,13 @@ const submit = async () => {
   box-shadow: 0 0 0 1px #c9d6e6 inset;
 }
 .auth-form :deep(.el-input__wrapper.is-focus) {
-  box-shadow: 0 0 0 1.5px #409eff inset;
+  box-shadow: 0 0 0 1.5px #2563EB inset;
   background: #fff;
 }
 .auth-form :deep(.el-input__inner) {
   height: 40px;
   font-size: 14px;
-  color: #1f2d3d;
+  color: #000000;
 }
 .auth-form :deep(.el-form-item) {
   margin-bottom: 18px;

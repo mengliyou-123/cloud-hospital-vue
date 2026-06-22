@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { getDepartmentsApi, getDoctorsByDeptApi, getSchedulesApi, registerApi } from '../../api/registration'
@@ -14,35 +14,65 @@ const loadingDepts = ref(false)
 
 const doctors = ref<Doctor[]>([])
 const loadingDoctors = ref(false)
-const selectedDept = ref<Department | null>(null)
 
 const schedules = ref<Schedule[]>([])
 const loadingSchedules = ref(false)
+
+const selectedDept = ref<Department | null>(null)
 const selectedDoctor = ref<Doctor | null>(null)
 const selectedDate = ref('')
 const selectedSlot = ref('')
 
 const submitting = ref(false)
 
+const query = reactive({
+  deptKeyword: '',
+  doctorKeyword: ''
+})
+
 const dateOptions = computed(() => {
-  const options: { label: string; value: string }[] = []
+  const options: { label: string; value: string; week: string; day: string }[] = []
   const today = new Date()
+  const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+
   for (let i = 0; i < 7; i++) {
     const d = new Date(today)
     d.setDate(today.getDate() + i)
-    const ds = d.toISOString().split('T')[0]
-    const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+
+    const value = d.toISOString().split('T')[0]
+
     options.push({
-      label: ds + ' ' + weekDays[d.getDay()],
-      value: ds
+      label: i === 0 ? '今天' : i === 1 ? '明天' : weekDays[d.getDay()],
+      value,
+      week: weekDays[d.getDay()],
+      day: `${d.getMonth() + 1}/${d.getDate()}`
     })
   }
+
   return options
 })
 
-onMounted(() => {
-  loadDepts()
+const filteredDepts = computed(() => {
+  const kw = query.deptKeyword.trim()
+  if (!kw) return depts.value
+  return depts.value.filter((d) => `${d.deptName}${d.deptDesc || ''}`.includes(kw))
 })
+
+const filteredDoctors = computed(() => {
+  const kw = query.doctorKeyword.trim()
+  if (!kw) return doctors.value
+  return doctors.value.filter((d) => `${d.realName}${d.title}${d.skill || ''}${d.deptName || ''}`.includes(kw))
+})
+
+const selectedSchedule = computed(() => {
+  return schedules.value.find((s) => s.timeSlot === selectedSlot.value)
+})
+
+const canSubmit = computed(() => {
+  return !!selectedDept.value && !!selectedDoctor.value && !!selectedDate.value && !!selectedSlot.value
+})
+
+onMounted(loadDepts)
 
 async function loadDepts() {
   loadingDepts.value = true
@@ -62,6 +92,8 @@ function selectDept(dept: Department) {
   selectedDate.value = ''
   selectedSlot.value = ''
   schedules.value = []
+  doctors.value = []
+  query.doctorKeyword = ''
   step.value = 2
   loadDoctors(dept.id)
 }
@@ -87,7 +119,10 @@ function selectDoctor(doctor: Doctor) {
 }
 
 async function loadSchedules() {
+  selectedSlot.value = ''
+
   if (!selectedDoctor.value || !selectedDate.value) return
+
   loadingSchedules.value = true
   try {
     const res = await getSchedulesApi(selectedDoctor.value.id, selectedDate.value)
@@ -99,33 +134,31 @@ async function loadSchedules() {
   }
 }
 
-function selectSlot(s: Schedule) {
-  if ((s.remainingQuota ?? 0) === 0) {
+function selectDate(date: string) {
+  selectedDate.value = date
+  loadSchedules()
+}
+
+function selectSlot(schedule: Schedule) {
+  if ((schedule.remainingQuota ?? 0) <= 0) {
     ElMessage.warning('该时段号源已满，请选择其他时段')
     return
   }
-  selectedSlot.value = s.timeSlot
+
+  selectedSlot.value = schedule.timeSlot
 }
 
-async function doRegister() {
-  if (!selectedDoctor.value || !selectedDept.value || !selectedDate.value || !selectedSlot.value) {
-    ElMessage.warning('请完善挂号信息')
-    return
+function goStep(targetStep: number) {
+  if (targetStep === 1) {
+    step.value = 1
   }
-  submitting.value = true
-  try {
-    const res = await registerApi({
-      doctorId: selectedDoctor.value.id,
-      deptId: selectedDept.value.id,
-      registerDate: selectedDate.value,
-      timeSlot: selectedSlot.value
-    })
-    if (res.code === 200) {
-      ElMessage.success('挂号成功！')
-      router.push('/patient/registers')
-    }
-  } finally {
-    submitting.value = false
+
+  if (targetStep === 2 && selectedDept.value) {
+    step.value = 2
+  }
+
+  if (targetStep === 3 && selectedDoctor.value) {
+    step.value = 3
   }
 }
 
@@ -135,588 +168,648 @@ function goBack() {
     selectedDate.value = ''
     selectedSlot.value = ''
     schedules.value = []
-  } else if (step.value === 2) {
+    return
+  }
+
+  if (step.value === 2) {
     step.value = 1
     selectedDoctor.value = null
+    doctors.value = []
+    return
+  }
+
+  router.push('/patient/home')
+}
+
+async function doRegister() {
+  if (!canSubmit.value || !selectedDoctor.value || !selectedDept.value) {
+    ElMessage.warning('请完善挂号信息')
+    return
+  }
+
+  submitting.value = true
+  try {
+    const res = await registerApi({
+      doctorId: selectedDoctor.value.id,
+      deptId: selectedDept.value.id,
+      registerDate: selectedDate.value,
+      timeSlot: selectedSlot.value
+    })
+
+    if (res.code === 200) {
+      ElMessage.success('挂号成功，请按预约时间到院就诊')
+      router.push('/patient/registers')
+    }
+  } finally {
+    submitting.value = false
   }
 }
 </script>
 
 <template>
-  <div class="register-page">
-    <!-- 顶部导航 -->
-    <header class="page-header">
-      <div class="page-header-inner">
-        <el-button text @click="router.push('/patient/home')">
-          <el-icon><ArrowLeft /></el-icon>
-          <span>返回首页</span>
-        </el-button>
-        <h1 class="page-title">在线挂号预约</h1>
-        <el-button type="primary" size="default" @click="router.push('/patient/registers')">
-          我的挂号记录
-        </el-button>
+  <div class="page-shell register-page">
+    <div class="page-card guide-card">
+      <div class="guide-left">
+        <div class="guide-title">三步完成在线挂号</div>
+        <div class="guide-sub">选择科室、医生和就诊时段，系统会自动校验号源。</div>
       </div>
-    </header>
 
-    <!-- 步骤条 -->
-    <div class="steps-bar">
-      <div class="steps-inner">
-        <el-steps :active="step - 1" align-center finish-status="success">
-          <el-step title="选择科室" description="选择需要就诊的科室" />
-          <el-step title="选择医生" description="选择您信任的医生" />
-          <el-step title="确认挂号" description="确认时间并完成挂号" />
-        </el-steps>
+      <el-button type="primary" plain @click="router.push('/patient/registers')">
+        <el-icon><Notebook /></el-icon>
+        我的挂号记录
+      </el-button>
+    </div>
+
+    <div class="page-card steps-card">
+      <el-steps :active="step - 1" align-center finish-status="success">
+        <el-step title="选择科室" description="明确就诊方向" @click="goStep(1)" />
+        <el-step title="选择医生" description="查看出诊医生" @click="goStep(2)" />
+        <el-step title="确认号源" description="提交预约" @click="goStep(3)" />
+      </el-steps>
+    </div>
+
+    <div v-if="step === 1" class="page-card step-panel" v-loading="loadingDepts">
+      <div class="step-header">
+        <div>
+          <h2>请选择就诊科室</h2>
+          <p>建议根据症状选择对应科室，不确定时可咨询导诊台。</p>
+        </div>
+
+        <el-input
+          v-model="query.deptKeyword"
+          clearable
+          placeholder="搜索科室"
+          class="step-search"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
+        </el-input>
+      </div>
+
+      <el-empty v-if="filteredDepts.length === 0 && !loadingDepts" description="暂无可选科室" />
+
+      <div v-else class="dept-grid">
+        <button
+          v-for="dept in filteredDepts"
+          :key="dept.id"
+          class="dept-card"
+          type="button"
+          @click="selectDept(dept)"
+        >
+          <span class="dept-icon">
+            <el-icon><OfficeBuilding /></el-icon>
+          </span>
+          <span class="dept-name">{{ dept.deptName }}</span>
+          <span class="dept-desc">{{ dept.deptDesc || '专业医疗团队为您服务' }}</span>
+          <span class="card-action">
+            选择科室
+            <el-icon><ArrowRight /></el-icon>
+          </span>
+        </button>
       </div>
     </div>
 
-    <div class="content">
-      <!-- 步骤1：选择科室 -->
-      <div v-if="step === 1" v-loading="loadingDepts" class="step-content">
-        <div class="step-header">
-          <h2>请选择就诊科室</h2>
-          <p>根据您的症状选择对应的科室，如有疑问请咨询导诊台</p>
-        </div>
-        <div v-if="depts.length === 0 && !loadingDepts" class="empty-state">
-          <el-empty description="暂无可选科室" />
-        </div>
-        <div v-else class="dept-grid">
-          <div
-            v-for="dept in depts"
-            :key="dept.id"
-            class="dept-card"
-            @click="selectDept(dept)"
-          >
-            <div class="dept-icon">
-              <el-icon :size="28"><OfficeBuilding /></el-icon>
-            </div>
-            <div class="dept-name">{{ dept.deptName }}</div>
-            <div class="dept-desc">{{ dept.deptDesc || '专业医疗团队为您服务' }}</div>
-            <div class="dept-action">
-              <span>选择科室</span>
-              <el-icon><ArrowRight /></el-icon>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 步骤2：选择医生 -->
-      <div v-if="step === 2" v-loading="loadingDoctors" class="step-content">
-        <div class="step-header">
-          <el-button text @click="goBack" class="back-btn">
-            <el-icon><ArrowLeft /></el-icon>返回选科室
+    <div v-if="step === 2" class="page-card step-panel" v-loading="loadingDoctors">
+      <div class="step-header">
+        <div>
+          <el-button text class="back-btn" @click="goBack">
+            <el-icon><ArrowLeft /></el-icon>
+            返回选科室
           </el-button>
           <h2>【{{ selectedDept?.deptName }}】出诊医生</h2>
+          <p>请选择本次预约医生。</p>
         </div>
-        <div v-if="doctors.length === 0 && !loadingDoctors" class="empty-state">
-          <el-empty description="该科室暂无出诊医生" />
-        </div>
-        <div v-else class="doctor-list">
-          <div
-            v-for="doc in doctors"
-            :key="doc.id"
-            class="doctor-card"
-            @click="selectDoctor(doc)"
-          >
-            <el-avatar :size="52" class="doc-avatar">{{ doc.realName.charAt(0) }}</el-avatar>
-            <div class="doc-info">
-              <div class="doc-name">
-                {{ doc.realName }}
-                <el-tag size="small" type="primary" effect="plain">{{ doc.title }}</el-tag>
-              </div>
-              <div class="doc-skill">{{ doc.skill || '暂无介绍' }}</div>
-              <div class="doc-dept">{{ doc.deptName }}</div>
-            </div>
-            <div class="doc-arrow">
-              <el-icon><ArrowRight /></el-icon>
-            </div>
-          </div>
-        </div>
+
+        <el-input
+          v-model="query.doctorKeyword"
+          clearable
+          placeholder="搜索医生 / 职称 / 专长"
+          class="step-search"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
+        </el-input>
       </div>
 
-      <!-- 步骤3：确认挂号 -->
-      <div v-if="step === 3" class="step-content">
-        <div class="step-header">
-          <el-button text @click="goBack" class="back-btn">
-            <el-icon><ArrowLeft /></el-icon>返回选医生
-          </el-button>
-          <h2>确认挂号信息</h2>
+      <el-empty v-if="filteredDoctors.length === 0 && !loadingDoctors" description="该科室暂无出诊医生" />
+
+      <div v-else class="doctor-grid">
+        <button
+          v-for="doc in filteredDoctors"
+          :key="doc.id"
+          class="doctor-card"
+          type="button"
+          @click="selectDoctor(doc)"
+        >
+          <el-avatar :size="52" class="doc-avatar">
+            {{ doc.realName.charAt(0) }}
+          </el-avatar>
+
+          <span class="doc-info">
+            <span class="doc-name">
+              {{ doc.realName }}
+              <el-tag size="small" type="primary" effect="plain">{{ doc.title }}</el-tag>
+            </span>
+            <span class="doc-skill">{{ doc.skill || '暂无介绍' }}</span>
+            <span class="doc-dept">{{ doc.deptName }}</span>
+          </span>
+
+          <el-icon class="doc-arrow"><ArrowRight /></el-icon>
+        </button>
+      </div>
+    </div>
+
+    <div v-if="step === 3" class="register-workspace">
+      <div class="page-card confirm-panel">
+        <div class="step-header compact">
+          <div>
+            <el-button text class="back-btn" @click="goBack">
+              <el-icon><ArrowLeft /></el-icon>
+              返回选医生
+            </el-button>
+            <h2>确认挂号信息</h2>
+            <p>请选择日期和时段后提交预约。</p>
+          </div>
         </div>
 
-        <!-- 医生信息卡片 -->
-        <div class="confirm-card">
-          <div class="confirm-info">
-            <el-avatar :size="56" class="confirm-avatar">
-              {{ selectedDoctor?.realName?.charAt(0) }}
-            </el-avatar>
-            <div class="confirm-detail">
-              <div class="confirm-doctor">
-                {{ selectedDoctor?.realName }}
-                <el-tag size="small" type="primary" effect="plain">{{ selectedDoctor?.title }}</el-tag>
-              </div>
-              <div class="confirm-dept">{{ selectedDept?.deptName }}</div>
-              <div class="confirm-skill">{{ selectedDoctor?.skill || '暂无专长介绍' }}</div>
+        <div class="doctor-summary">
+          <el-avatar :size="58" class="doc-avatar large">
+            {{ selectedDoctor?.realName?.charAt(0) }}
+          </el-avatar>
+
+          <div>
+            <div class="summary-name">
+              {{ selectedDoctor?.realName }}
+              <el-tag size="small" type="primary" effect="plain">
+                {{ selectedDoctor?.title }}
+              </el-tag>
+            </div>
+            <div class="summary-line">
+              {{ selectedDept?.deptName }} · {{ selectedDoctor?.skill || '暂无专长介绍' }}
             </div>
           </div>
         </div>
 
-        <!-- 选择日期 -->
-        <div class="section-block">
-          <div class="section-title">
-            <el-icon><Calendar /></el-icon>
-            <span>选择就诊日期</span>
-          </div>
-          <div class="date-options">
-            <el-radio-group v-model="selectedDate" @change="loadSchedules" size="large">
-              <el-radio-button
-                v-for="d in dateOptions"
-                :key="d.value"
-                :value="d.value"
-              >{{ d.label }}</el-radio-button>
-            </el-radio-group>
-          </div>
+        <div class="section-title">
+          <el-icon><Calendar /></el-icon>
+          选择就诊日期
         </div>
 
-        <!-- 选择时段 -->
-        <div v-if="selectedDate" class="section-block" v-loading="loadingSchedules">
-          <div class="section-title">
-            <el-icon><Clock /></el-icon>
-            <span>选择就诊时段</span>
-          </div>
-          <div v-if="schedules.length === 0 && !loadingSchedules" class="empty-state">
-            <el-empty description="该日期暂无出诊排班" :image-size="80" />
-          </div>
+        <div class="date-grid">
+          <button
+            v-for="d in dateOptions"
+            :key="d.value"
+            class="date-card"
+            :class="{ active: selectedDate === d.value }"
+            type="button"
+            @click="selectDate(d.value)"
+          >
+            <strong>{{ d.label }}</strong>
+            <span>{{ d.day }}</span>
+            <small>{{ d.week }}</small>
+          </button>
+        </div>
+
+        <div class="section-title">
+          <el-icon><Clock /></el-icon>
+          选择就诊时段
+        </div>
+
+        <div v-loading="loadingSchedules" class="slot-area">
+          <el-empty
+            v-if="selectedDate && schedules.length === 0 && !loadingSchedules"
+            description="该日期暂无出诊排班"
+            :image-size="76"
+          />
+
+          <el-empty
+            v-else-if="!selectedDate"
+            description="请先选择就诊日期"
+            :image-size="76"
+          />
+
           <div v-else class="slot-grid">
-            <div
+            <button
               v-for="s in schedules"
               :key="s.id"
+              type="button"
               class="slot-card"
               :class="{
                 active: selectedSlot === s.timeSlot,
-                'is-full': s.remainingQuota === 0
+                full: (s.remainingQuota ?? 0) <= 0
               }"
               @click="selectSlot(s)"
             >
-              <div class="slot-icon">
-                <el-icon :size="20"><Clock /></el-icon>
-              </div>
-              <div class="slot-info">
-                <span class="slot-time">{{ s.timeSlot }}</span>
-                <span class="slot-quota">
-                  <template v-if="s.remainingQuota === 0">
-                    <span class="quota-full">号源已满</span>
-                  </template>
-                  <template v-else>
-                    <span class="quota-available">剩余 {{ s.remainingQuota }} / {{ s.quota }}</span>
-                  </template>
-                </span>
-              </div>
-              <div v-if="selectedSlot === s.timeSlot" class="slot-check">
+              <span class="slot-time">{{ s.timeSlot }}</span>
+              <span
+                class="slot-quota"
+                :class="{ danger: (s.remainingQuota ?? 0) <= 0 }"
+              >
+                {{ (s.remainingQuota ?? 0) <= 0 ? '号源已满' : `剩余 ${s.remainingQuota} / ${s.quota}` }}
+              </span>
+
+              <span v-if="selectedSlot === s.timeSlot" class="slot-check">
                 <el-icon><Check /></el-icon>
-              </div>
-            </div>
+              </span>
+            </button>
           </div>
         </div>
-
-        <!-- 确认按钮 -->
-        <div class="submit-area">
-          <el-button
-            type="primary"
-            size="large"
-            :disabled="!selectedSlot"
-            :loading="submitting"
-            @click="doRegister"
-            class="submit-btn"
-          >
-            <template v-if="selectedSlot">
-              <el-icon><Check /></el-icon>
-              确认挂号 · 挂号费 ¥10.00
-            </template>
-            <template v-else>
-              请先选择就诊时段
-            </template>
-          </el-button>
-        </div>
       </div>
+
+      <aside class="page-card order-summary">
+        <div class="summary-title">预约确认</div>
+
+        <div class="summary-row">
+          <span>科室</span>
+          <strong>{{ selectedDept?.deptName || '-' }}</strong>
+        </div>
+
+        <div class="summary-row">
+          <span>医生</span>
+          <strong>{{ selectedDoctor?.realName || '-' }}</strong>
+        </div>
+
+        <div class="summary-row">
+          <span>日期</span>
+          <strong>{{ selectedDate || '-' }}</strong>
+        </div>
+
+        <div class="summary-row">
+          <span>时段</span>
+          <strong>{{ selectedSlot || '-' }}</strong>
+        </div>
+
+        <div class="summary-row">
+          <span>号源</span>
+          <strong>{{ selectedSchedule ? `剩余 ${selectedSchedule.remainingQuota}` : '-' }}</strong>
+        </div>
+
+        <div class="summary-fee">
+          <span>挂号费</span>
+          <strong>¥10.00</strong>
+        </div>
+
+        <el-button
+          class="submit-btn"
+          type="primary"
+          size="large"
+          :disabled="!canSubmit"
+          :loading="submitting"
+          @click="doRegister"
+        >
+          <el-icon><Check /></el-icon>
+          确认挂号
+        </el-button>
+
+        <div class="summary-tip">
+          挂号成功后，可在“我的挂号记录”查看就医进度。
+        </div>
+      </aside>
     </div>
   </div>
 </template>
 
 <style scoped>
 .register-page {
-  min-height: 100vh;
-  background: var(--h-bg);
   display: flex;
   flex-direction: column;
+  gap: 16px;
 }
 
-/* 顶部导航 */
-.page-header {
-  background: #fff;
-  border-bottom: 1px solid var(--h-border);
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  flex-shrink: 0;
-}
-
-.page-header-inner {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 0 24px;
-  height: 60px;
+.guide-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
 }
 
-.page-title {
-  font-size: 18px;
-  font-weight: 700;
+.guide-title {
+  font-size: 17px;
+  font-weight: 800;
   color: var(--h-text);
-  margin: 0;
 }
 
-/* 步骤条 */
-.steps-bar {
-  background: #fff;
-  border-bottom: 1px solid var(--h-border-light);
+.guide-sub {
+  margin-top: 4px;
+  color: var(--h-text-tertiary);
+  font-size: 13px;
 }
 
-.steps-inner {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 28px 24px;
+.steps-card {
+  padding: 24px 18px;
 }
 
-/* 内容区 */
-.content {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 24px 24px 60px;
-}
-
-.step-content {
-  animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+.step-panel {
+  min-height: 420px;
 }
 
 .step-header {
-  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
 .step-header h2 {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--h-text);
   margin: 0 0 6px;
+  font-size: 20px;
+  color: var(--h-text);
 }
 
 .step-header p {
-  font-size: 14px;
-  color: var(--h-text-tertiary);
   margin: 0;
+  color: var(--h-text-tertiary);
+  font-size: 14px;
+}
+
+.step-search {
+  width: 260px;
 }
 
 .back-btn {
-  margin-bottom: 8px;
+  margin-bottom: 6px;
+  padding-left: 0;
 }
 
-/* 科室网格 */
 .dept-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
   gap: 16px;
+}
+
+.dept-card,
+.doctor-card,
+.date-card,
+.slot-card {
+  border: 0;
+  font-family: inherit;
 }
 
 .dept-card {
-  padding: 28px 20px 22px;
-  background: #fff;
+  min-height: 184px;
+  padding: 22px;
   border: 1px solid var(--h-border);
   border-radius: var(--h-radius-md);
-  text-align: center;
+  background: var(--h-card);
   cursor: pointer;
-  transition: all var(--h-transition);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
   box-shadow: var(--h-shadow-sm);
+  transition: all var(--h-transition);
 }
 
-.dept-card:hover {
-  border-color: var(--h-primary);
+.dept-card:hover,
+.doctor-card:hover,
+.date-card:hover,
+.slot-card:hover:not(.full) {
+  transform: translateY(-2px);
+  border-color: var(--h-primary-border);
   box-shadow: var(--h-shadow-md);
-  transform: translateY(-3px);
 }
 
 .dept-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: var(--h-radius-md);
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
   background: var(--h-primary-bg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   color: var(--h-primary);
-  margin: 0 auto 14px;
-  transition: all var(--h-transition);
-}
-
-.dept-card:hover .dept-icon {
-  background: var(--h-primary);
-  color: #fff;
+  font-size: 22px;
+  margin-bottom: 16px;
 }
 
 .dept-name {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 17px;
+  font-weight: 800;
   color: var(--h-text);
-  margin-bottom: 6px;
 }
 
 .dept-desc {
-  font-size: 13px;
+  margin: 8px 0 14px;
   color: var(--h-text-tertiary);
-  line-height: 1.5;
-  margin-bottom: 14px;
+  font-size: 13px;
+  line-height: 1.45;
+  flex: 1;
 }
 
-.dept-action {
+.card-action {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 13px;
   color: var(--h-primary);
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 700;
 }
 
-/* 医生列表 */
-.doctor-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.doctor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 14px;
 }
 
 .doctor-card {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 20px;
-  background: #fff;
+  padding: 18px;
   border: 1px solid var(--h-border);
   border-radius: var(--h-radius-md);
+  background: var(--h-card);
   cursor: pointer;
-  transition: all var(--h-transition);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
   box-shadow: var(--h-shadow-sm);
-}
-
-.doctor-card:hover {
-  border-color: var(--h-primary);
-  box-shadow: var(--h-shadow-md);
-  transform: translateX(4px);
+  transition: all var(--h-transition);
 }
 
 .doc-avatar {
-  background: linear-gradient(135deg, #10B981, #059669) !important;
+  background: linear-gradient(135deg, #10b981, #059669) !important;
   color: #fff;
-  font-weight: 600;
-  font-size: 18px;
-  flex-shrink: 0;
+  font-weight: 800;
+  flex: 0 0 auto;
+}
+
+.doc-avatar.large {
+  font-size: 20px;
 }
 
 .doc-info {
-  flex: 1;
+  display: flex;
+  flex-direction: column;
   min-width: 0;
+  flex: 1;
 }
 
 .doc-name {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--h-text);
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 4px;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--h-text);
 }
 
 .doc-skill {
+  margin-top: 5px;
   font-size: 13px;
   color: var(--h-text-secondary);
-  margin-bottom: 2px;
-  line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .doc-dept {
+  margin-top: 3px;
   font-size: 12px;
   color: var(--h-text-tertiary);
 }
 
 .doc-arrow {
   color: var(--h-text-placeholder);
-  flex-shrink: 0;
-  transition: all var(--h-transition);
 }
 
-.doctor-card:hover .doc-arrow {
-  color: var(--h-primary);
-  transform: translateX(4px);
+.register-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 16px;
+  align-items: start;
 }
 
-/* 确认卡片 */
-.confirm-card {
-  background: #fff;
-  border: 1px solid var(--h-border);
-  border-radius: var(--h-radius-md);
-  padding: 24px;
-  margin-bottom: 24px;
-  box-shadow: var(--h-shadow);
+.confirm-panel {
+  min-width: 0;
 }
 
-.confirm-info {
+.doctor-summary {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid var(--h-border);
+  border-radius: var(--h-radius-md);
+  background: linear-gradient(135deg, #f8fafc, #fff);
+  margin-bottom: 22px;
 }
 
-.confirm-avatar {
-  background: linear-gradient(135deg, var(--h-primary), var(--h-primary-light)) !important;
-  color: #fff;
-  font-weight: 700;
-  font-size: 20px;
-  flex-shrink: 0;
-}
-
-.confirm-detail {
-  flex: 1;
-}
-
-.confirm-doctor {
+.summary-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--h-text);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 4px;
 }
 
-.confirm-dept {
-  font-size: 14px;
+.summary-line {
+  margin-top: 5px;
   color: var(--h-text-secondary);
-  margin-bottom: 4px;
-}
-
-.confirm-skill {
   font-size: 13px;
-  color: var(--h-text-tertiary);
-}
-
-/* 区块 */
-.section-block {
-  background: #fff;
-  border: 1px solid var(--h-border);
-  border-radius: var(--h-radius-md);
-  padding: 24px;
-  margin-bottom: 20px;
-  box-shadow: var(--h-shadow-sm);
 }
 
 .section-title {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 15px;
-  font-weight: 600;
+  margin: 20px 0 12px;
+  font-weight: 800;
   color: var(--h-text);
-  margin-bottom: 16px;
 }
 
 .section-title .el-icon {
   color: var(--h-primary);
 }
 
-/* 日期选项 */
-.date-options {
-  overflow-x: auto;
-  padding-bottom: 4px;
+.date-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(98px, 1fr));
+  gap: 10px;
 }
 
-/* 时段网格 */
+.date-card {
+  padding: 13px 8px;
+  border: 1px solid var(--h-border);
+  border-radius: var(--h-radius);
+  background: var(--h-card);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  align-items: center;
+  color: var(--h-text-secondary);
+  transition: all var(--h-transition);
+}
+
+.date-card strong {
+  color: var(--h-text);
+}
+
+.date-card span {
+  font-weight: 800;
+}
+
+.date-card small {
+  color: var(--h-text-tertiary);
+}
+
+.date-card.active {
+  border-color: var(--h-primary);
+  background: var(--h-primary-bg);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+.slot-area {
+  min-height: 126px;
+}
+
 .slot-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 12px;
 }
 
 .slot-card {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 16px;
+  position: relative;
+  min-height: 74px;
+  padding: 14px 16px;
   border: 1.5px solid var(--h-border);
   border-radius: var(--h-radius);
+  background: var(--h-card);
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
   transition: all var(--h-transition);
-  position: relative;
-}
-
-.slot-card:hover:not(.is-full) {
-  border-color: var(--h-primary);
-  background: var(--h-primary-bg);
 }
 
 .slot-card.active {
   border-color: var(--h-primary);
   background: var(--h-primary-bg);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-.slot-card.is-full {
-  opacity: 0.5;
+.slot-card.full {
+  opacity: 0.58;
   cursor: not-allowed;
-  background: #F8FAFC;
-}
-
-.slot-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--h-radius);
   background: var(--h-primary-bg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--h-primary);
-  flex-shrink: 0;
-}
-
-.slot-card.active .slot-icon {
-  background: var(--h-primary);
-  color: #fff;
-}
-
-.slot-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
 }
 
 .slot-time {
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--h-text);
 }
 
 .slot-quota {
   font-size: 12px;
-}
-
-.quota-full {
-  color: var(--h-danger);
-}
-
-.quota-available {
   color: var(--h-success);
+}
+
+.slot-quota.danger {
+  color: var(--h-danger);
 }
 
 .slot-check {
@@ -725,59 +818,104 @@ function goBack() {
   right: -8px;
   width: 24px;
   height: 24px;
-  border-radius: 50%;
+  border-radius: 999px;
   background: var(--h-primary);
   color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+  display: grid;
+  place-items: center;
 }
 
-/* 提交按钮 */
-.submit-area {
-  text-align: center;
-  margin-top: 32px;
+.order-summary {
+  position: sticky;
+  top: 88px;
+  padding: 18px;
+}
+
+.summary-title {
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--h-text);
+  margin-bottom: 14px;
+}
+
+.summary-row,
+.summary-fee {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--h-border);
+  font-size: 13px;
+}
+
+.summary-row span {
+  color: var(--h-text-tertiary);
+}
+
+.summary-row strong {
+  color: var(--h-text);
+  text-align: right;
+}
+
+.summary-fee {
+  border-bottom: 0;
+  margin: 8px 0 12px;
+}
+
+.summary-fee span {
+  color: var(--h-text-secondary);
+}
+
+.summary-fee strong {
+  color: var(--h-danger);
+  font-size: 20px;
 }
 
 .submit-btn {
-  min-width: 280px;
-  height: 48px;
-  font-size: 16px;
-  font-weight: 600;
-  border-radius: var(--h-radius) !important;
+  width: 100%;
+  height: 44px;
+  font-weight: 800;
 }
 
-.submit-btn .el-icon {
-  margin-right: 6px;
+.summary-tip {
+  margin-top: 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--h-text-tertiary);
+  text-align: center;
 }
 
-/* 空状态 */
-.empty-state {
-  padding: 40px 0;
+@media (max-width: 1100px) {
+  .register-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .order-summary {
+    position: static;
+  }
 }
 
-/* 响应式 */
 @media (max-width: 768px) {
-  .page-header-inner {
-    padding: 0 16px;
+  .guide-card,
+  .step-header {
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  .page-title {
-    font-size: 16px;
+  .step-search {
+    width: 100%;
   }
 
-  .content {
-    padding: 16px 16px 40px;
-  }
-
-  .dept-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
+  .dept-grid,
+  .doctor-grid,
+  .date-grid,
   .slot-grid {
     grid-template-columns: 1fr;
+  }
+
+  .steps-card {
+    padding: 18px 8px;
   }
 }
 </style>

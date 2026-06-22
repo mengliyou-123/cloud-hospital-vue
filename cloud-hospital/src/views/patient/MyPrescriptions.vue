@@ -258,7 +258,7 @@ function getPayTypeText(type: number) {
 }
 
 .page-header {
-  background: #fff;
+  background: var(--h-card);
   border-bottom: 1px solid var(--h-border);
   position: relative;
   flex-shrink: 0;
@@ -287,7 +287,7 @@ function getPayTypeText(type: number) {
 }
 
 .main-card {
-  background: #fff;
+  background: var(--h-card);
   border-radius: var(--h-radius-md);
   border: 1px solid var(--h-border);
   padding: 24px;

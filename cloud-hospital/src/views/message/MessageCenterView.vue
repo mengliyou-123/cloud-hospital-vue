@@ -2,7 +2,6 @@
 import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import RoleLayout from '../../components/RoleLayout.vue'
 import {
   deleteMessageApi,
   listMyMessagesApi,
@@ -47,6 +46,7 @@ async function open(row: SysMessageVO) {
   if (row.isRead === 0) {
     await markMessageReadApi(row.id)
   }
+
   if (row.relatedPath) {
     router.push(row.relatedPath)
   } else {
@@ -79,12 +79,14 @@ onMounted(load)
 </script>
 
 <template>
-  <RoleLayout page-title="消息中心" icon-name="Bell" subtitle="查看系统提醒、业务通知和待办消息">
-    <el-card shadow="never" class="message-page">
+  <div class="page-shell message-page">
+    <el-card shadow="never" class="message-card">
       <template #header>
         <div class="header-row">
           <span>我的消息</span>
-          <el-button type="primary" @click="markAll">全部标为已读</el-button>
+          <el-button type="primary" @click="markAll">
+            全部标为已读
+          </el-button>
         </div>
       </template>
 
@@ -96,18 +98,36 @@ onMounted(load)
           style="width: 240px"
           @keyup.enter="load"
         />
-        <el-select v-model="query.isRead" placeholder="阅读状态" clearable style="width: 150px">
+
+        <el-select
+          v-model="query.isRead"
+          placeholder="阅读状态"
+          clearable
+          style="width: 150px"
+        >
           <el-option label="未读" :value="0" />
           <el-option label="已读" :value="1" />
         </el-select>
-        <el-select v-model="query.messageType" placeholder="消息类型" clearable style="width: 160px">
+
+        <el-select
+          v-model="query.messageType"
+          placeholder="消息类型"
+          clearable
+          style="width: 160px"
+        >
           <el-option label="系统消息" value="system" />
           <el-option label="业务提醒" value="business" />
           <el-option label="公告通知" value="notice" />
           <el-option label="预警消息" value="warning" />
         </el-select>
-        <el-button type="primary" @click="load">查询</el-button>
-        <el-button @click="reset">重置</el-button>
+
+        <el-button type="primary" @click="load">
+          查询
+        </el-button>
+
+        <el-button @click="reset">
+          重置
+        </el-button>
       </div>
 
       <el-table v-loading="loading" :data="list" border>
@@ -122,7 +142,12 @@ onMounted(load)
         <el-table-column label="标题" min-width="180">
           <template #default="{ row }">
             <strong>{{ row.title }}</strong>
-            <el-tag v-if="row.priority >= 2" type="warning" size="small" style="margin-left: 8px">
+            <el-tag
+              v-if="row.priority >= 2"
+              type="warning"
+              size="small"
+              style="margin-left: 8px"
+            >
               重要
             </el-tag>
           </template>
@@ -138,10 +163,19 @@ onMounted(load)
             <el-button link type="primary" @click="open(row)">
               {{ row.relatedPath ? '查看业务' : '查看' }}
             </el-button>
-            <el-button v-if="row.isRead === 0" link type="success" @click="markRead(row)">
+
+            <el-button
+              v-if="row.isRead === 0"
+              link
+              type="success"
+              @click="markRead(row)"
+            >
               已读
             </el-button>
-            <el-button link type="danger" @click="remove(row)">删除</el-button>
+
+            <el-button link type="danger" @click="remove(row)">
+              删除
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -158,12 +192,16 @@ onMounted(load)
         />
       </div>
     </el-card>
-  </RoleLayout>
+  </div>
 </template>
 
 <style scoped>
 .message-page {
-  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.message-card {
   border-radius: 16px;
 }
 

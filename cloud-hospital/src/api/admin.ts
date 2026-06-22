@@ -9,7 +9,8 @@ export const rolePageApi = (params: {
   roleCode?: string
   pageNum: number
   pageSize: number
-}): Promise<Result<PageResult<SysRole>>> => request.get('/admin/roles', { params })
+}): Promise<Result<PageResult<SysRole>>> =>
+  request.get('/admin/roles', { params })
 
 export const roleDetailApi = (id: number): Promise<Result<SysRole>> =>
   request.get(`/admin/roles/${id}`)
@@ -30,7 +31,8 @@ export const userPageApi = (params: {
   status?: number
   pageNum: number
   pageSize: number
-}): Promise<Result<PageResult<SysUser>>> => request.get('/admin/users', { params })
+}): Promise<Result<PageResult<SysUser>>> =>
+  request.get('/admin/users', { params })
 
 export const userDetailApi = (id: number): Promise<Result<SysUser>> =>
   request.get(`/admin/users/${id}`)
@@ -60,7 +62,8 @@ export const deptPageApi = (params: {
   status?: number
   pageNum: number
   pageSize: number
-}): Promise<Result<PageResult<Department>>> => request.get('/admin/departments', { params })
+}): Promise<Result<PageResult<Department>>> =>
+  request.get('/admin/departments', { params })
 
 export const deptAllApi = (): Promise<Result<Department[]>> =>
   request.get('/admin/departments/all')
@@ -103,6 +106,7 @@ export interface DoctorAdminVO {
   skill: string
   workStatus: number
   phone: string
+  idCard?: string
   status: number
   username: string
 }
@@ -113,15 +117,29 @@ export const doctorAdminPageApi = (params: {
   workStatus?: number
   pageNum: number
   pageSize: number
-}): Promise<Result<PageResult<DoctorAdminVO>>> => request.get('/admin/doctors', { params })
+}): Promise<Result<PageResult<DoctorAdminVO>>> =>
+  request.get('/admin/doctors', { params })
 
 export const doctorAdminDetailApi = (id: number): Promise<Result<DoctorAdminVO>> =>
   request.get(`/admin/doctors/${id}`)
 
-export const doctorAdminAddApi = (data: Partial<DoctorAdminVO> & { username: string; password?: string; phone: string; realName: string }): Promise<Result<null>> =>
+export const doctorAdminAddApi = (
+  data: Partial<DoctorAdminVO> & {
+    username: string
+    password?: string
+    phone: string
+    realName: string
+  }
+): Promise<Result<null>> =>
   request.post('/admin/doctors', data)
 
-export const doctorAdminUpdateApi = (data: Partial<DoctorAdminVO> & { id: number; phone?: string; realName?: string }): Promise<Result<null>> =>
+export const doctorAdminUpdateApi = (
+  data: Partial<DoctorAdminVO> & {
+    id: number
+    phone?: string
+    realName?: string
+  }
+): Promise<Result<null>> =>
   request.put('/admin/doctors', data)
 
 export const doctorAdminUpdateStatusApi = (id: number, workStatus: number): Promise<Result<null>> =>
@@ -155,14 +173,16 @@ export const schedulePageApi = (params: {
   endDate?: string
   pageNum: number
   pageSize: number
-}): Promise<Result<PageResult<DoctorSchedule>>> => request.get('/admin/schedules', { params })
+}): Promise<Result<PageResult<DoctorSchedule>>> =>
+  request.get('/admin/schedules', { params })
 
 export const scheduleListApi = (params: {
   doctorId?: number
   deptId?: number
   startDate?: string
   endDate?: string
-}): Promise<Result<DoctorSchedule[]>> => request.get('/admin/schedules/list', { params })
+}): Promise<Result<DoctorSchedule[]>> =>
+  request.get('/admin/schedules/list', { params })
 
 export const scheduleDetailApi = (id: number): Promise<Result<DoctorSchedule>> =>
   request.get(`/admin/schedules/${id}`)
@@ -176,7 +196,8 @@ export const scheduleBatchAddApi = (data: {
   timeSlots: string[]
   deptId?: number
   remark?: string
-}): Promise<Result<null>> => request.post('/admin/schedules/batch', data)
+}): Promise<Result<null>> =>
+  request.post('/admin/schedules/batch', data)
 
 export const scheduleUpdateApi = (data: Partial<DoctorSchedule>): Promise<Result<null>> =>
   request.put('/admin/schedules', data)
@@ -190,7 +211,8 @@ export const doctorScheduleListApi = (params: {
   endDate?: string
   pageNum: number
   pageSize: number
-}): Promise<Result<PageResult<DoctorSchedule>>> => request.get('/doctor/schedules', { params })
+}): Promise<Result<PageResult<DoctorSchedule>>> =>
+  request.get('/doctor/schedules', { params })
 
 // ========== 考勤管理 API ==========
 
@@ -223,10 +245,16 @@ export interface DoctorLeave {
 }
 
 // 医生端 - 考勤打卡
-export const doctorCheckInApi = (data: { location?: string; remark?: string }): Promise<Result<DoctorAttendance>> =>
+export const doctorCheckInApi = (data: {
+  location?: string
+  remark?: string
+}): Promise<Result<DoctorAttendance>> =>
   request.post('/doctor/attendance/check-in', data)
 
-export const doctorCheckOutApi = (data: { location?: string; remark?: string }): Promise<Result<DoctorAttendance>> =>
+export const doctorCheckOutApi = (data: {
+  location?: string
+  remark?: string
+}): Promise<Result<DoctorAttendance>> =>
   request.post('/doctor/attendance/check-out', data)
 
 export const doctorAttendanceListApi = (params: {
@@ -234,17 +262,24 @@ export const doctorAttendanceListApi = (params: {
   endDate?: string
   pageNum: number
   pageSize: number
-}): Promise<Result<PageResult<DoctorAttendance>>> => request.get('/doctor/attendance', { params })
+}): Promise<Result<PageResult<DoctorAttendance>>> =>
+  request.get('/doctor/attendance', { params })
 
 // 医生端 - 请假申请
-export const leaveApplyApi = (data: { leaveType: string; startDate: string; endDate: string; reason: string }): Promise<Result<null>> =>
+export const leaveApplyApi = (data: {
+  leaveType: string
+  startDate: string
+  endDate: string
+  reason: string
+}): Promise<Result<null>> =>
   request.post('/doctor/leave', data)
 
 export const leaveListApi = (params: {
   auditStatus?: number
   pageNum: number
   pageSize: number
-}): Promise<Result<PageResult<DoctorLeave>>> => request.get('/doctor/leave', { params })
+}): Promise<Result<PageResult<DoctorLeave>>> =>
+  request.get('/doctor/leave', { params })
 
 // 管理员端 - 请假审批
 export const leaveAdminListApi = (params: {
@@ -252,9 +287,16 @@ export const leaveAdminListApi = (params: {
   auditStatus?: number
   pageNum: number
   pageSize: number
-}): Promise<Result<PageResult<DoctorLeave>>> => request.get('/admin/leave', { params })
+}): Promise<Result<PageResult<DoctorLeave>>> =>
+  request.get('/admin/leave', { params })
 
-export const leaveAuditApi = (id: number, data: { auditStatus: number; auditRemark?: string }): Promise<Result<null>> =>
+export const leaveAuditApi = (
+  id: number,
+  data: {
+    auditStatus: number
+    auditRemark?: string
+  }
+): Promise<Result<null>> =>
   request.post(`/admin/leave/${id}/audit`, data)
 
 // 管理员端 - 考勤记录
@@ -264,10 +306,12 @@ export const attendanceAdminListApi = (params: {
   endDate?: string
   pageNum: number
   pageSize: number
-}): Promise<Result<PageResult<DoctorAttendance>>> => request.get('/admin/attendance', { params })
+}): Promise<Result<PageResult<DoctorAttendance>>> =>
+  request.get('/admin/attendance', { params })
 
 // 管理员端 - 考勤统计
 export const attendanceStatsApi = (params: {
   startDate?: string
   endDate?: string
-}): Promise<Result<any>> => request.get('/admin/attendance/stats', { params })
+}): Promise<Result<any>> =>
+  request.get('/admin/attendance/stats', { params })

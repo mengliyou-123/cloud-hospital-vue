@@ -181,12 +181,12 @@ onMounted(() => {
 <style scoped>
 .page {
   min-height: 100vh;
-  background: #f4f6fb;
+  background: var(--h-bg);
   padding: 24px 12px;
   box-sizing: border-box;
 }
 .container { max-width: 1200px; margin: 0 auto; }
-.topbar { display: flex; align-items: center; padding: 12px 20px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.06); border-radius: 8px; margin-bottom: 16px; }
+.topbar { display: flex; align-items: center; padding: 12px 20px; background: var(--h-card); border: 1px solid var(--h-border); border-radius: 8px; margin-bottom: 16px; }
 .topbar-left, .topbar-right { display: flex; align-items: center; gap: 12px; min-width: 180px; flex-wrap: wrap; }
 .topbar-right { justify-content: flex-end; }
 .topbar-title { flex: 1; text-align: center; font-size: 18px; font-weight: 700; color: #1f2d3d; }

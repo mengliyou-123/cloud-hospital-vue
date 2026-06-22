@@ -23,10 +23,11 @@ async function load() {
 }
 
 async function openMessage(msg: SysMessageVO) {
-  if (!msg.isRead) {
+  if (msg.isRead === 0) {
     await markMessageReadApi(msg.id)
     await load()
   }
+
   if (msg.relatedPath) {
     router.push(msg.relatedPath)
   } else {
@@ -46,7 +47,7 @@ onMounted(load)
     <template #reference>
       <div class="message-bell">
         <el-badge :value="unread" :hidden="unread <= 0" :max="99">
-          <el-button circle>
+          <el-button circle class="message-btn" title="消息提醒">
             <el-icon><Bell /></el-icon>
           </el-button>
         </el-badge>
@@ -61,20 +62,21 @@ onMounted(load)
 
       <div v-loading="loading">
         <div v-if="latest.length" class="message-list">
-          <div
+          <button
             v-for="msg in latest"
             :key="msg.id"
             class="message-item"
             :class="{ unread: msg.isRead === 0 }"
+            type="button"
             @click="openMessage(msg)"
           >
-            <div class="message-title">
-              <span>{{ msg.title }}</span>
+            <span class="message-title">
+              <strong>{{ msg.title }}</strong>
               <el-tag v-if="msg.isRead === 0" type="danger" size="small">未读</el-tag>
-            </div>
-            <div class="message-content">{{ msg.content }}</div>
-            <div class="message-time">{{ msg.createTime }}</div>
-          </div>
+            </span>
+            <span class="message-content">{{ msg.content }}</span>
+            <span class="message-time">{{ msg.createTime }}</span>
+          </button>
         </div>
         <el-empty v-else description="暂无消息" />
       </div>
@@ -83,10 +85,23 @@ onMounted(load)
 </template>
 
 <style scoped>
-.message-bell :deep(.el-button) {
-  background: rgba(255, 255, 255, 0.18);
-  border-color: rgba(255, 255, 255, 0.2);
-  color: #fff;
+.message-bell {
+  display: inline-flex;
+  align-items: center;
+}
+
+.message-btn {
+  width: 38px;
+  height: 38px;
+  color: var(--h-primary);
+  background: var(--h-card);
+  border-color: var(--h-border);
+}
+
+.message-btn:hover {
+  color: var(--h-primary-hover);
+  background: var(--h-primary-bg);
+  border-color: var(--h-primary-border);
 }
 
 .popover {
@@ -97,8 +112,9 @@ onMounted(load)
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-weight: 700;
-  margin-bottom: 8px;
+  font-weight: 800;
+  margin-bottom: 10px;
+  color: var(--h-text);
 }
 
 .message-list {
@@ -108,35 +124,38 @@ onMounted(load)
 }
 
 .message-item {
-  padding: 10px;
-  border-radius: 10px;
-  background: #f6f8fb;
+  width: 100%;
+  border: 1px solid var(--h-border);
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--h-card);
   cursor: pointer;
-  transition: 0.2s;
+  text-align: left;
+  transition: all var(--h-transition);
 }
 
 .message-item:hover {
-  background: #ecf5ff;
+  background: var(--h-primary-bg);
+  border-color: var(--h-primary-border);
 }
 
 .message-item.unread {
-  border-left: 4px solid #f56c6c;
-  background: #fff7f7;
+  border-left: 4px solid var(--h-danger);
+  background: var(--h-danger-bg);
 }
 
 .message-title {
   display: flex;
   justify-content: space-between;
   gap: 8px;
-  font-weight: 700;
-  color: #1f2d3d;
+  color: var(--h-text);
 }
 
 .message-content {
-  margin-top: 4px;
-  color: #606266;
+  margin-top: 5px;
+  color: var(--h-text-secondary);
   font-size: 13px;
-  line-height: 1.5;
+  line-height: 1.55;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -144,8 +163,9 @@ onMounted(load)
 }
 
 .message-time {
-  margin-top: 6px;
+  display: block;
+  margin-top: 7px;
   font-size: 12px;
-  color: #a8abb2;
+  color: var(--h-text-tertiary);
 }
 </style>

@@ -442,15 +442,16 @@ const prescriptionTotal = computed(() => {
 <style scoped>
 .consultation-page {
   min-height: 100vh;
-  background: #f4f6fb;
+  background: var(--h-bg);
   padding-bottom: 40px;
 }
 .topbar {
   display: flex;
   align-items: center;
   padding: 12px 28px;
-  background: #fff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  background: var(--h-card);
+  border-bottom: 1px solid var(--h-border);
+  box-shadow: var(--h-shadow-sm);
   margin-bottom: 20px;
 }
 .topbar-left, .topbar-right {
@@ -479,7 +480,7 @@ const prescriptionTotal = computed(() => {
 .prescription-section {
   margin-top: 16px;
   padding: 16px;
-  background: #fafafa;
+  background: var(--h-primary-bg);
   border-radius: 8px;
 }
 .drug-selector {

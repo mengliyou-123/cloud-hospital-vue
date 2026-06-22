@@ -166,7 +166,7 @@ onMounted(() => { loadDispenses() })
 </template>
 
 <style scoped>
-.page { padding: 20px; background: #fff; min-height: calc(100vh - 40px); }
-.page-title { margin-bottom: 20px; color: #303133; }
+.page { padding: 20px; background: var(--h-bg); min-height: calc(100vh - 40px); }
+.page-title { margin-bottom: 20px; color: var(--h-text); }
 .toolbar { display: flex; gap: 10px; margin-bottom: 16px; align-items: center; }
 </style>

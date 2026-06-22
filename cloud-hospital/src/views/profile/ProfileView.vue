@@ -186,154 +186,135 @@ function goBack() {
 </script>
 
 <template>
-  <div class="profile-page">
-    <header class="page-header">
-      <div class="page-header-inner">
+  <div class="page-shell profile-page">
+    <div class="page-toolbar">
+      <div class="toolbar-left">
         <el-button text @click="goBack" class="back-btn">
           <el-icon><ArrowLeft /></el-icon>
           <span>返回首页</span>
         </el-button>
-        <h1 class="page-title">个人中心</h1>
-        <div></div>
       </div>
-    </header>
+      <div class="toolbar-right"></div>
+    </div>
 
-    <div class="content">
-      <div class="profile-card" v-loading="loading">
-        <!-- 用户信息头部 -->
-        <div class="profile-banner">
-          <div class="banner-bg"></div>
-          <div class="banner-content">
-            <div class="profile-avatar">
-              <el-avatar :size="80" class="avatar">
-                {{ profile.realName?.charAt(0) || user?.realName?.charAt(0) || 'U' }}
-              </el-avatar>
-            </div>
-            <div class="profile-info">
-              <h2 class="profile-name">{{ profile.realName || user?.realName || '---' }}</h2>
-              <div class="profile-meta">
-                <span class="meta-item">
-                  <el-icon><User /></el-icon>
-                  账号：{{ profile.username || user?.username }}
-                </span>
-                <el-tag size="small" type="success" effect="dark" round>
-                  {{ profile.roleName || user?.roleName }}
-                </el-tag>
-              </div>
+    <div class="page-card profile-card" v-loading="loading">
+      <!-- 用户信息头部 -->
+      <div class="profile-banner">
+        <div class="banner-bg"></div>
+        <div class="banner-content">
+          <div class="profile-avatar">
+            <el-avatar :size="80" class="avatar">
+              {{ profile.realName?.charAt(0) || user?.realName?.charAt(0) || 'U' }}
+            </el-avatar>
+          </div>
+          <div class="profile-info">
+            <h2 class="profile-name">{{ profile.realName || user?.realName || '---' }}</h2>
+            <div class="profile-meta">
+              <span class="meta-item">
+                <el-icon><User /></el-icon>
+                账号：{{ profile.username || user?.username }}
+              </span>
+              <el-tag size="small" type="success" effect="dark" round>
+                {{ profile.roleName || user?.roleName }}
+              </el-tag>
             </div>
           </div>
         </div>
-
-        <!-- 标签页 -->
-        <el-tabs v-model="activeTab" class="profile-tabs">
-          <el-tab-pane label="基础资料" name="base">
-            <el-form :model="baseForm" :rules="baseRules" label-width="110px" class="profile-form">
-              <el-form-item label="真实姓名" prop="realName">
-                <el-input v-model="baseForm.realName" placeholder="请输入真实姓名" />
-              </el-form-item>
-              <el-form-item label="手机号" prop="phone">
-                <el-input v-model="baseForm.phone" placeholder="请输入手机号" />
-              </el-form-item>
-              <el-form-item label="身份证号">
-                <el-input v-model="baseForm.idCard" placeholder="选填" />
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" @click="submitBase" class="save-btn">保存修改</el-button>
-              </el-form-item>
-            </el-form>
-          </el-tab-pane>
-
-          <el-tab-pane v-if="profile.roleCode === 'patient'" label="患者档案" name="patient">
-            <el-form label-width="110px" class="profile-form">
-              <el-form-item label="年龄">
-                <el-input-number v-model="patientForm.age" :min="0" :max="150" placeholder="请输入年龄" />
-              </el-form-item>
-              <el-form-item label="性别">
-                <el-radio-group v-model="patientForm.gender">
-                  <el-radio :value="1">男</el-radio>
-                  <el-radio :value="2">女</el-radio>
-                </el-radio-group>
-              </el-form-item>
-              <el-form-item label="住址">
-                <el-input v-model="patientForm.address" placeholder="请输入住址" />
-              </el-form-item>
-              <el-form-item label="既往病史">
-                <el-input v-model="patientForm.pastMedical" type="textarea" :rows="3" placeholder="请输入既往病史（选填）" />
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" @click="submitPatient" class="save-btn">保存档案</el-button>
-              </el-form-item>
-            </el-form>
-          </el-tab-pane>
-
-          <el-tab-pane v-if="profile.roleCode === 'doctor'" label="医生信息" name="doctor">
-            <el-form label-width="110px" class="profile-form">
-              <el-form-item label="职称">
-                <el-input v-model="doctorForm.title" placeholder="请输入职称，如：主治医师、副主任医师等" />
-              </el-form-item>
-              <el-form-item label="专业技能">
-                <el-input v-model="doctorForm.skill" type="textarea" :rows="3" placeholder="请输入专业技能" />
-              </el-form-item>
-              <el-form-item label="在岗状态">
-                <el-radio-group v-model="doctorForm.workStatus">
-                  <el-radio :value="1">在岗</el-radio>
-                  <el-radio :value="0">请假</el-radio>
-                  <el-radio :value="2">离岗</el-radio>
-                </el-radio-group>
-              </el-form-item>
-              <el-form-item label="所属科室">
-                <el-tag v-if="profile.doctorDeptName" type="success">{{ profile.doctorDeptName }}</el-tag>
-                <el-tag v-else type="info">未分配科室，请联系管理员分配</el-tag>
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" @click="submitDoctor" class="save-btn">保存信息</el-button>
-              </el-form-item>
-            </el-form>
-          </el-tab-pane>
-
-          <el-tab-pane label="修改密码" name="pwd">
-            <el-form ref="pwdFormRef" :model="pwdForm" :rules="pwdRules" label-width="110px" class="profile-form">
-              <el-form-item label="原密码" prop="oldPassword">
-                <el-input v-model="pwdForm.oldPassword" type="password" show-password />
-              </el-form-item>
-              <el-form-item label="新密码" prop="newPassword">
-                <el-input v-model="pwdForm.newPassword" type="password" show-password />
-              </el-form-item>
-              <el-form-item label="确认密码" prop="confirmPassword">
-                <el-input v-model="pwdForm.confirmPassword" type="password" show-password />
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" :loading="pwdLoading" @click="submitPwd" class="save-btn">提交修改</el-button>
-              </el-form-item>
-            </el-form>
-          </el-tab-pane>
-        </el-tabs>
       </div>
+
+      <!-- 标签页 -->
+      <el-tabs v-model="activeTab" class="profile-tabs">
+        <el-tab-pane label="基础资料" name="base">
+          <el-form :model="baseForm" :rules="baseRules" label-width="110px" class="profile-form">
+            <el-form-item label="真实姓名" prop="realName">
+              <el-input v-model="baseForm.realName" placeholder="请输入真实姓名" />
+            </el-form-item>
+            <el-form-item label="手机号" prop="phone">
+              <el-input v-model="baseForm.phone" placeholder="请输入手机号" />
+            </el-form-item>
+            <el-form-item label="身份证号">
+              <el-input v-model="baseForm.idCard" placeholder="选填" />
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="submitBase" class="save-btn">保存修改</el-button>
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
+
+        <el-tab-pane v-if="profile.roleCode === 'patient'" label="患者档案" name="patient">
+          <el-form label-width="110px" class="profile-form">
+            <el-form-item label="年龄">
+              <el-input-number v-model="patientForm.age" :min="0" :max="150" placeholder="请输入年龄" />
+            </el-form-item>
+            <el-form-item label="性别">
+              <el-radio-group v-model="patientForm.gender">
+                <el-radio :value="1">男</el-radio>
+                <el-radio :value="2">女</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item label="住址">
+              <el-input v-model="patientForm.address" placeholder="请输入住址" />
+            </el-form-item>
+            <el-form-item label="既往病史">
+              <el-input v-model="patientForm.pastMedical" type="textarea" :rows="3" placeholder="请输入既往病史（选填）" />
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="submitPatient" class="save-btn">保存档案</el-button>
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
+
+        <el-tab-pane v-if="profile.roleCode === 'doctor'" label="医生信息" name="doctor">
+          <el-form label-width="110px" class="profile-form">
+            <el-form-item label="职称">
+              <el-input v-model="doctorForm.title" placeholder="请输入职称，如：主治医师、副主任医师等" />
+            </el-form-item>
+            <el-form-item label="专业技能">
+              <el-input v-model="doctorForm.skill" type="textarea" :rows="3" placeholder="请输入专业技能" />
+            </el-form-item>
+            <el-form-item label="在岗状态">
+              <el-radio-group v-model="doctorForm.workStatus">
+                <el-radio :value="1">在岗</el-radio>
+                <el-radio :value="0">请假</el-radio>
+                <el-radio :value="2">离岗</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item label="所属科室">
+              <el-tag v-if="profile.doctorDeptName" type="success">{{ profile.doctorDeptName }}</el-tag>
+              <el-tag v-else type="info">未分配科室，请联系管理员分配</el-tag>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="submitDoctor" class="save-btn">保存信息</el-button>
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
+
+        <el-tab-pane label="修改密码" name="pwd">
+          <el-form ref="pwdFormRef" :model="pwdForm" :rules="pwdRules" label-width="110px" class="profile-form">
+            <el-form-item label="原密码" prop="oldPassword">
+              <el-input v-model="pwdForm.oldPassword" type="password" show-password />
+            </el-form-item>
+            <el-form-item label="新密码" prop="newPassword">
+              <el-input v-model="pwdForm.newPassword" type="password" show-password />
+            </el-form-item>
+            <el-form-item label="确认密码" prop="confirmPassword">
+              <el-input v-model="pwdForm.confirmPassword" type="password" show-password />
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" :loading="pwdLoading" @click="submitPwd" class="save-btn">提交修改</el-button>
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
+      </el-tabs>
     </div>
   </div>
 </template>
 
 <style scoped>
 .profile-page {
-  min-height: 100vh;
-  background: linear-gradient(180deg, #f5f8ff 0%, #f0f4ff 50%, #fafbfc 100%);
   display: flex;
   flex-direction: column;
-}
-
-.page-header {
-  background: #fff;
-  border-bottom: 1px solid var(--h-border);
-  position: relative;
-  flex-shrink: 0;
-}
-
-.page-header-inner {
-  padding: 0 24px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  gap: 16px;
 }
 
 .back-btn {
@@ -345,30 +326,9 @@ function goBack() {
   color: var(--h-primary);
 }
 
-.page-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--h-text);
-  margin: 0;
-}
-
-.content {
-  flex: 1;
-  overflow-y: auto;
-  display: flex;
-  justify-content: center;
-  padding: 32px 24px 60px;
-}
-
 .profile-card {
   width: 100%;
-  max-width: 780px;
-  background: #fff;
   border-radius: 20px;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  box-shadow:
-    0 4px 6px rgba(15, 23, 42, 0.03),
-    0 12px 28px rgba(59, 130, 246, 0.06);
   overflow: hidden;
 }
 
@@ -400,14 +360,14 @@ function goBack() {
 }
 
 .avatar {
-  background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%) !important;
-  color: #3b82f6 !important;
+  background: linear-gradient(135deg, var(--h-primary-bg), var(--h-accent-bg)) !important;
+  color: var(--h-primary) !important;
   font-weight: 800;
   font-size: 30px;
   box-shadow:
     0 4px 16px rgba(59, 130, 246, 0.2),
-    inset 0 2px 4px rgba(255, 255, 255, 0.8);
-  border: 3px solid rgba(255, 255, 255, 0.9);
+    inset 0 2px 4px rgba(255, 255, 255, 0.3);
+  border: 3px solid rgba(255, 255, 255, 0.4);
 }
 
 .profile-info {
@@ -454,13 +414,13 @@ function goBack() {
 
 .profile-tabs :deep(.el-tabs__nav-wrap::after) {
   height: 1px;
-  background-color: #e2e8f0;
+  background-color: var(--h-border);
 }
 
 .profile-tabs :deep(.el-tabs__item) {
   font-size: 15px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--h-text-tertiary);
   height: 48px;
   line-height: 48px;
   padding: 0 20px;
@@ -468,14 +428,14 @@ function goBack() {
 }
 
 .profile-tabs :deep(.el-tabs__item.is-active) {
-  color: #3b82f6;
+  color: var(--h-primary);
   font-weight: 700;
 }
 
 .profile-tabs :deep(.el-tabs__active-bar) {
   height: 3px;
   border-radius: 2px;
-  background: linear-gradient(90deg, #60a5fa, #3b82f6);
+  background: linear-gradient(90deg, var(--h-primary), var(--h-accent));
 }
 
 .profile-tabs :deep(.el-tabs__content) {
@@ -489,7 +449,7 @@ function goBack() {
 
 .profile-form :deep(.el-form-item__label) {
   font-weight: 600;
-  color: #334155;
+  color: var(--h-text-secondary);
   font-size: 14px;
 }
 
@@ -501,12 +461,12 @@ function goBack() {
 
 .profile-form :deep(.el-input__wrapper:hover),
 .profile-form :deep(.el-textarea__inner:hover) {
-  box-shadow: 0 0 0 1px #93c5fd;
+  box-shadow: 0 0 0 1px var(--h-primary-border);
 }
 
 .profile-form :deep(.el-input__wrapper:focus-within),
 .profile-form :deep(.el-textarea__inner:focus) {
-  box-shadow: 0 0 0 2px #7dd3fc, 0 0 0 5px rgba(125, 211, 252, 0.2);
+  box-shadow: 0 0 0 2px var(--h-primary), 0 0 0 5px color-mix(in srgb, var(--h-primary) 20%, transparent);
 }
 
 .save-btn {
@@ -515,15 +475,15 @@ function goBack() {
   border-radius: 10px;
   font-weight: 700;
   letter-spacing: 0.05em;
-  background: linear-gradient(135deg, #3b82f6, #0ea5e9);
+  background: linear-gradient(135deg, var(--h-primary), var(--h-accent));
   border: none;
-  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.25);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--h-primary) 25%, transparent);
   transition: all 0.3s ease;
 }
 
 .save-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.35);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--h-primary) 35%, transparent);
 }
 
 .save-btn:active {
@@ -532,21 +492,7 @@ function goBack() {
 
 /* ========== 响应式 ========== */
 @media (max-width: 768px) {
-  .page-header-inner {
-    padding: 0 16px;
-    height: 52px;
-  }
-
-  .page-title {
-    font-size: 16px;
-  }
-
-  .content {
-    padding: 20px 16px 48px;
-  }
-
   .profile-card {
-    max-width: 100%;
     border-radius: 16px;
   }
 

@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { ElMessageBox } from 'element-plus'
-import RoleLayout from '../components/RoleLayout.vue'
-import type { SidebarMenuItem } from '../components/Sidebar.vue'
 import CareModeQuickPanel from '../components/CareModeQuickPanel.vue'
+import DashboardPanel from '../components/DashboardPanel.vue'
+import HomeFeatureGrid from '../components/HomeFeatureGrid.vue'
 import { checkCareModeApi } from '../api/systemConfig'
 import { sendTodayReminderApi } from '../api/visit-flow'
-import DashboardPanel from '../components/DashboardPanel.vue'
 import {
   applyCareModeForCurrentUser,
   isCareModeEnabledForUser,
@@ -20,19 +19,30 @@ import {
 const showQuickPanel = ref(false)
 
 const features = [
-  { title: '在线挂号预约', desc: '选择科室与医生，预约就医时间段。', icon: 'Calendar', path: '/patient/register' },
-  { title: '挂号记录', desc: '查看历史挂号记录，取消预约。', icon: 'Notebook', path: '/patient/registers' },
-  { title: '就诊记录', desc: '查看所有历史就诊记录与诊断详情。', icon: 'Document', path: '/patient/treatments' },
-  { title: '处方与缴费', desc: '查看处方详情，完成费用缴纳。', icon: 'Wallet', path: '/patient/prescriptions' }
-]
-
-const sidebarMenu: SidebarMenuItem[] = [
-  { label: '服务中心', icon: 'HomeFilled', path: '/patient/home' },
-  { label: '在线挂号', icon: 'Calendar', path: '/patient/register' },
-  { label: '挂号记录', icon: 'Notebook', path: '/patient/registers' },
-  { label: '就诊记录', icon: 'Document', path: '/patient/treatments' },
-  { label: '处方缴费', icon: 'Wallet', path: '/patient/prescriptions' },
-  { label: '个人中心', icon: 'User', path: '/patient/profile' }
+  {
+    title: '在线挂号预约',
+    desc: '选择科室与医生，预约就医时间段。',
+    icon: 'Calendar',
+    path: '/patient/register'
+  },
+  {
+    title: '挂号记录',
+    desc: '查看历史挂号记录、取消预约、查看就医进度。',
+    icon: 'Notebook',
+    path: '/patient/registers'
+  },
+  {
+    title: '就诊记录',
+    desc: '查看历史就诊记录与诊断详情。',
+    icon: 'Document',
+    path: '/patient/treatments'
+  },
+  {
+    title: '处方与缴费',
+    desc: '查看处方详情，完成费用缴纳。',
+    icon: 'Wallet',
+    path: '/patient/prescriptions'
+  }
 ]
 
 async function checkAndPromptCareMode() {
@@ -63,14 +73,12 @@ async function checkAndPromptCareMode() {
           closeOnClickModal: false
         }
       )
+
       setCareModeEnabledForUser(true, check.userId, check.config)
       showQuickPanel.value = check.config.quickPanelEnabled
       markCareModePrompted(check.userId)
       speakCareModeText('已为您开启关怀模式，页面文字、按钮和常用入口已优化。', check.config.voiceEnabled)
-
-      window.setTimeout(() => {
-        window.location.reload()
-      }, 5)
+      window.setTimeout(() => window.location.reload(), 5)
     } catch {
       markCareModePrompted(check.userId)
     }
@@ -79,35 +87,22 @@ async function checkAndPromptCareMode() {
   }
 }
 
-// onMounted(checkAndPromptCareMode)
-  onMounted(() => {
-    checkAndPromptCareMode()
-    sendTodayReminderApi().catch(() => {})
-  })
+onMounted(() => {
+  checkAndPromptCareMode()
+  sendTodayReminderApi().catch(() => {})
+})
 </script>
 
 <template>
-  <RoleLayout
-    page-title="患者服务中心"
-    icon-name="UserFilled"
-    subtitle="便捷预约、查询就医信息"
-    :features="features"
-    :sidebar-menu="sidebarMenu"
-  >
-    <template #after-welcome>
-      <CareModeQuickPanel :class="{ 'quick-panel-hidden': !showQuickPanel }" />
-      <DashboardPanel />
-    </template>
-  </RoleLayout>
+  <div class="page-shell patient-home">
+    <CareModeQuickPanel :class="{ 'quick-panel-hidden': !showQuickPanel }" />
+    <DashboardPanel />
+    <HomeFeatureGrid :features="features" />
+  </div>
 </template>
 
 <style scoped>
-.quick-panel-wrap {
-  margin-bottom: 18px;
-}
-
-/* 关怀模式关闭时平滑隐藏快捷面板，不直接移除 DOM */
-:deep(.care-quick-panel) {
+.patient-home :deep(.care-quick-panel) {
   margin-bottom: 18px;
   transition:
     opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
@@ -118,7 +113,7 @@ async function checkAndPromptCareMode() {
   overflow: hidden;
 }
 
-:deep(.care-quick-panel.quick-panel-hidden) {
+.patient-home :deep(.care-quick-panel.quick-panel-hidden) {
   opacity: 0;
   transform: translateY(-12px);
   max-height: 0;

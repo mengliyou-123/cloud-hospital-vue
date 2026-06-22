@@ -116,8 +116,8 @@ function go(path: string) {
   gap: 14px;
   padding: 18px 20px;
   border-radius: 14px;
-  border: 1px solid #e2e8f0;
-  background: #ffffff;
+  border: 1px solid var(--h-border);
+  background: var(--h-card);
   cursor: pointer;
   transition: all 0.25s ease;
 }

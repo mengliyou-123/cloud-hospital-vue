@@ -1,205 +1,196 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { getUser } from '../utils/request'
+import { getRoleMenu } from '../config/roleMenus'
 
 export interface SidebarMenuItem {
   label: string
   icon: string
-  path: string
+  path?: string
+  children?: SidebarMenuItem[]
 }
 
-const props = withDefaults(defineProps<{
-  menuItems: SidebarMenuItem[]
+const props = defineProps<{
   collapsed?: boolean
-}>(), {
-  collapsed: false
-})
-
-const emit = defineEmits<{
-  (e: 'update:collapsed', value: boolean): void
+  mobile?: boolean
 }>()
 
 const router = useRouter()
 const route = useRoute()
+const user = computed(() => getUser())
 
-function toggleCollapse() {
-  emit('update:collapsed', !props.collapsed)
+const menuList = computed(() => getRoleMenu(user.value?.roleCode))
+const activePath = computed(() => route.path)
+
+function handleSelect(index: string) {
+  if (index && index !== route.path) router.push(index)
 }
 
-function navigate(path: string) {
-  if (route.path !== path) {
-    router.push(path)
-  }
+function flattenPaths(items: SidebarMenuItem[]): string[] {
+  return items.flatMap((item) =>
+    item.children?.length ? flattenPaths(item.children) : [item.path || '']
+  )
 }
 
-function isActive(path: string): boolean {
-  return route.path === path || route.path.startsWith(path + '/')
-}
+const availablePaths = computed(() => flattenPaths(menuList.value).filter(Boolean))
 </script>
 
 <template>
-  <aside class="sidebar" :class="{ collapsed }">
-    <!-- 折叠按钮 -->
-    <div class="sidebar-toggle" @click="toggleCollapse">
-      <el-icon :size="18">
-        <Fold v-if="!collapsed" />
-        <Expand v-else />
-      </el-icon>
-    </div>
-
-    <!-- 菜单列表 -->
-    <nav class="sidebar-nav">
-      <div
-        v-for="item in menuItems"
-        :key="item.path"
-        class="nav-item"
-        :class="{ active: isActive(item.path) }"
-        @click="navigate(item.path)"
+  <aside class="sidebar" :class="{ collapsed: props.collapsed, mobile: props.mobile }">
+    <div class="sidebar-scroll">
+      <el-menu
+        :default-active="activePath"
+        :collapse="props.collapsed && !props.mobile"
+        :unique-opened="false"
+        :collapse-transition="false"
+        class="role-menu"
+        @select="handleSelect"
       >
-        <div class="nav-icon">
-          <el-icon :size="20"><component :is="item.icon" /></el-icon>
-        </div>
-        <span class="nav-label" v-show="!collapsed">{{ item.label }}</span>
-        <div v-if="isActive(item.path) && !collapsed" class="nav-indicator"></div>
-      </div>
-    </nav>
+        <template v-for="item in menuList" :key="item.label">
+          <el-sub-menu v-if="item.children?.length" :index="item.label">
+            <template #title>
+              <el-icon>
+                <component :is="item.icon" />
+              </el-icon>
+              <span>{{ item.label }}</span>
+            </template>
 
-    <!-- 底部用户区 -->
-    <div class="sidebar-footer" v-show="!collapsed">
-      <slot name="footer">
-        <div class="footer-text">云医院 HIS</div>
-      </slot>
+            <el-menu-item
+              v-for="child in item.children"
+              :key="child.path || child.label"
+              :index="child.path || child.label"
+              :disabled="!child.path || !availablePaths.includes(child.path)"
+            >
+              <el-icon>
+                <component :is="child.icon" />
+              </el-icon>
+              <span>{{ child.label }}</span>
+            </el-menu-item>
+          </el-sub-menu>
+
+          <el-menu-item
+            v-else
+            :index="item.path || item.label"
+            :disabled="!item.path || !availablePaths.includes(item.path)"
+          >
+            <el-icon>
+              <component :is="item.icon" />
+            </el-icon>
+            <span>{{ item.label }}</span>
+          </el-menu-item>
+        </template>
+      </el-menu>
     </div>
   </aside>
 </template>
 
 <style scoped>
 .sidebar {
-  position: fixed;
-  left: 0;
-  top: 60px;
-  bottom: 0;
-  width: 220px;
-  background: linear-gradient(180deg, #1E3A5F 0%, #15294A 100%);
-  display: flex;
-  flex-direction: column;
-  z-index: 90;
-  transition: width 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow: hidden;
-  box-shadow: 2px 0 16px rgba(0, 0, 0, 0.08);
-  user-select: none;
-}
-
-/* 关怀模式下的侧边栏高度适配 */
-body.care-mode .sidebar {
-  top: 70px;
+  width: 236px;
+  flex: 0 0 236px;
+  height: calc(100vh - 72px);
+  position: sticky;
+  top: 72px;
+  background: var(--h-sidebar-bg);
+  border-right: 1px solid var(--h-sidebar-border);
+  transition: width 0.2s ease, flex-basis 0.2s ease;
+  z-index: 20;
 }
 
 .sidebar.collapsed {
-  width: 64px;
+  width: 76px;
+  flex-basis: 76px;
 }
 
-/* 折叠按钮 */
-.sidebar-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 44px;
-  margin: 8px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  color: rgba(255, 255, 255, 0.45);
-  transition: all var(--h-transition);
-  flex-shrink: 0;
+.sidebar.mobile {
+  display: block !important;
+  width: 100%;
+  height: 100vh;
+  position: static;
+  top: 0;
+  flex-basis: auto;
 }
 
-.sidebar-toggle:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.75);
-}
-
-/* 导航菜单 */
-.sidebar-nav {
-  flex: 1;
-  padding: 4px 10px;
+.sidebar-scroll {
+  height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
+  padding: 14px 10px;
 }
 
-.nav-item {
-  display: flex;
-  align-items: center;
+.sidebar-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: var(--h-border-strong);
+  border-radius: 999px;
+}
+
+.role-menu {
+  border-right: none;
+  background: transparent;
+}
+
+:deep(.el-menu) {
+  background: transparent;
+  border-right: none;
+}
+
+:deep(.el-menu-item),
+:deep(.el-sub-menu__title) {
   height: 44px;
-  padding: 0 12px;
-  margin-bottom: 2px;
-  border-radius: 8px;
-  cursor: pointer;
-  color: rgba(255, 255, 255, 0.6);
-  transition: all 0.18s ease;
-  position: relative;
-  white-space: nowrap;
+  border-radius: 12px;
+  margin: 4px 0;
+  color: var(--h-sidebar-text);
+  font-weight: 700;
 }
 
-.nav-item:hover {
-  background: rgba(255, 255, 255, 0.07);
-  color: rgba(255, 255, 255, 0.9);
+:deep(.el-menu-item:hover),
+:deep(.el-sub-menu__title:hover) {
+  color: var(--h-primary);
+  background: var(--h-primary-bg);
 }
 
-.nav-item.active {
-  background: rgba(37, 99, 235, 0.35);
+:deep(.el-menu-item.is-active) {
+  color: var(--h-sidebar-active-text);
+  background: var(--h-sidebar-active-bg);
+  box-shadow: var(--h-shadow-sm);
+}
+
+:deep(.el-menu-item .el-icon),
+:deep(.el-sub-menu__title .el-icon) {
+  font-size: 18px;
+}
+
+:deep(.el-sub-menu .el-menu-item) {
+  height: 40px;
+  margin-left: 6px;
+  font-size: 14px;
+  color: var(--h-sidebar-muted);
+}
+
+:deep(.el-sub-menu .el-menu-item.is-active) {
   color: #fff;
 }
 
-.nav-icon {
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
+:deep(.el-sub-menu__icon-arrow) {
+  color: var(--h-sidebar-muted);
+}
+
+.collapsed :deep(.el-menu-item),
+.collapsed :deep(.el-sub-menu__title) {
   justify-content: center;
-  flex-shrink: 0;
 }
 
-.nav-label {
-  margin-left: 12px;
-  font-size: 14px;
-  font-weight: 500;
-  transition: opacity 0.2s ease;
+.collapsed :deep(.el-sub-menu__icon-arrow) {
+  display: none;
 }
 
-.nav-indicator {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3px;
-  height: 20px;
-  border-radius: 2px 0 0 2px;
-  background: #60A5FA;
-}
-
-/* 底部 */
-.sidebar-footer {
-  padding: 16px 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  flex-shrink: 0;
-}
-
-.footer-text {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.3);
-  text-align: center;
-  letter-spacing: 1px;
-}
-
-/* 响应式 */
-@media (max-width: 768px) {
-  .sidebar {
-    width: 0;
-    box-shadow: none;
-  }
-
-  .sidebar.collapsed {
-    width: 0;
+@media (max-width: 860px) {
+  .sidebar:not(.mobile) {
+    display: none;
   }
 }
 </style>

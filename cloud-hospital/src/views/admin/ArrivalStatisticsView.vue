@@ -307,8 +307,8 @@ onMounted(() => {
   align-items: center;
   justify-content: space-between;
   padding: 14px 28px;
-  background: #fff;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  background: var(--h-card);
+  border-bottom: 1px solid var(--h-border);
   margin-bottom: 24px;
   border-radius: 0 0 16px 16px;
 }

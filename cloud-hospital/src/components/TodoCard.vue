@@ -87,8 +87,8 @@ function go() {
   min-height: 78px;
   padding: 14px 16px;
   border-radius: 10px;
-  background: #fff;
-  border: 1px solid #ebeef5;
+  background: var(--h-card);
+  border: 1px solid var(--h-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -101,8 +101,8 @@ function go() {
 }
 
 .todo-card.clickable:hover {
-  border-color: #c6e2ff;
-  background: #f8fbff;
+  border-color: var(--h-primary-light);
+  background: var(--h-primary-bg);
 }
 
 .stat-main {
