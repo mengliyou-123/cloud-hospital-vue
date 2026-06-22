@@ -14,20 +14,20 @@ const user = computed(() => getUser())
 <template>
   <router-view v-slot="{ Component, route }">
     <transition name="page-fade" mode="out-in" appear>
-      <component
-        v-if="route.meta?.publicLayout || !route.meta?.roles"
-        :is="Component"
-        :key="route.path"
-      />
-      <RoleLayout
-        v-else
-        :key="route.path"
-        :page-title="cleanTitle(route.meta?.title)"
-        :icon-name="(route.meta?.icon as string) || 'HomeFilled'"
-        :subtitle="(route.meta?.subtitle as string) || `当前登录角色：${user?.roleName || '系统用户'}`"
-      >
-        <component :is="Component" />
-      </RoleLayout>
+      <div :key="route.path">
+        <component
+          v-if="route.meta?.publicLayout || !route.meta?.roles"
+          :is="Component"
+        />
+        <RoleLayout
+          v-else
+          :page-title="cleanTitle(route.meta?.title)"
+          :icon-name="(route.meta?.icon as string) || 'HomeFilled'"
+          :subtitle="(route.meta?.subtitle as string) || `当前登录角色：${user?.roleName || '系统用户'}`"
+        >
+          <component :is="Component" />
+        </RoleLayout>
+      </div>
     </transition>
   </router-view>
 </template>

@@ -30,229 +30,229 @@ const routes: RouteRecordRaw[] = [
     path: '/patient/home',
     name: 'PatientHome',
     component: () => import('../views/PatientHome.vue'),
-    meta: { title: '患者中心 - 云医院', roles: ['patient'] }
+    meta: { title: '患者中心 - 云医院', icon: 'HomeFilled', roles: ['patient'] }
   },
   {
     path: '/patient/register',
     name: 'PatientRegister',
     component: () => import('../views/patient/RegisterView.vue'),
-    meta: { title: '在线挂号 - 云医院', roles: ['patient'] }
+    meta: { title: '在线挂号 - 云医院', icon: 'Calendar', roles: ['patient'] }
   },
   {
     path: '/patient/registers',
     name: 'PatientRegisters',
     component: () => import('../views/patient/MyRegisters.vue'),
-    meta: { title: '挂号记录 - 云医院', roles: ['patient'] }
+    meta: { title: '挂号记录 - 云医院', icon: 'Notebook', roles: ['patient'] }
   },
   {
     path: '/patient/profile',
     name: 'PatientProfile',
     component: () => import('../views/profile/ProfileView.vue'),
-    meta: { title: '个人中心 - 云医院', roles: ['patient'] }
+    meta: { title: '个人中心 - 云医院', icon: 'User', roles: ['patient'] }
   },
   {
     path: '/patient/logs',
     name: 'PatientLogs',
     component: () => import('../views/operlog/OperLogView.vue'),
-    meta: { title: '我的操作记录 - 云医院', roles: ['patient'] }
+    meta: { title: '我的操作记录 - 云医院', icon: 'Document', roles: ['patient'] }
   },
   {
     path: '/patient/treatments',
     name: 'PatientTreatments',
     component: () => import('../views/patient/MyTreatments.vue'),
-    meta: { title: '历史就诊记录 - 云医院', roles: ['patient'] }
+    meta: { title: '历史就诊记录 - 云医院', icon: 'Document', roles: ['patient'] }
   },
   {
     path: '/patient/prescriptions',
     name: 'PatientPrescriptions',
     component: () => import('../views/patient/MyPrescriptions.vue'),
-    meta: { title: '处方与缴费 - 云医院', roles: ['patient'] }
+    meta: { title: '处方与缴费 - 云医院', icon: 'Wallet', roles: ['patient'] }
   },
   // --- 医生工作台 ---
   {
     path: '/doctor/home',
     name: 'DoctorHome',
     component: () => import('../views/DoctorHome.vue'),
-    meta: { title: '医生工作台 - 云医院', roles: ['doctor'] }
+    meta: { title: '医生工作台 - 云医院', icon: 'HomeFilled', roles: ['doctor'] }
   },
   {
     path: '/doctor/schedules',
     name: 'DoctorSchedules',
     component: () => import('../views/doctor/DoctorScheduleView.vue'),
-    meta: { title: '我的排班 - 云医院', roles: ['doctor'] }
+    meta: { title: '我的排班 - 云医院', icon: 'Calendar', roles: ['doctor'] }
   },
   {
     path: '/doctor/attendance',
     name: 'DoctorAttendance',
     component: () => import('../views/doctor/DoctorAttendanceView.vue'),
-    meta: { title: '考勤打卡 - 云医院', roles: ['doctor'] }
+    meta: { title: '考勤打卡 - 云医院', icon: 'DataAnalysis', roles: ['doctor'] }
   },
   {
     path: '/doctor/leave',
     name: 'DoctorLeave',
     component: () => import('../views/doctor/DoctorLeaveView.vue'),
-    meta: { title: '请假申请 - 云医院', roles: ['doctor'] }
+    meta: { title: '请假申请 - 云医院', icon: 'EditPen', roles: ['doctor'] }
   },
   {
     path: '/doctor/consultation',
     name: 'DoctorConsultation',
     component: () => import('../views/doctor/ConsultationView.vue'),
-    meta: { title: '接诊工作台 - 云医院', roles: ['doctor'] }
+    meta: { title: '接诊工作台 - 云医院', icon: 'FirstAidKit', roles: ['doctor'] }
   },
   {
     path: '/doctor/patients',
     name: 'DoctorPatients',
     component: () => import('../views/PatientAdminView.vue'),
-    meta: { title: '患者档案 - 云医院', roles: ['doctor'] }
+    meta: { title: '患者档案 - 云医院', icon: 'User', roles: ['doctor'] }
   },
   {
     path: '/doctor/profile',
     name: 'DoctorProfile',
     component: () => import('../views/profile/ProfileView.vue'),
-    meta: { title: '个人中心 - 云医院', roles: ['doctor'] }
+    meta: { title: '个人中心 - 云医院', icon: 'User', roles: ['doctor'] }
   },
   {
     path: '/doctor/logs',
     name: 'DoctorLogs',
     component: () => import('../views/operlog/OperLogView.vue'),
-    meta: { title: '我的操作记录 - 云医院', roles: ['doctor'] }
+    meta: { title: '我的操作记录 - 云医院', icon: 'Document', roles: ['doctor'] }
   },
   // --- 药房管理员 ---
   {
     path: '/drug-admin/home',
     name: 'DrugAdminHome',
     component: () => import('../views/DrugAdminHome.vue'),
-    meta: { title: '药房管理 - 云医院', roles: ['drug_admin'] }
+    meta: { title: '药房管理 - 云医院', icon: 'HomeFilled', roles: ['drug_admin'] }
   },
   {
     path: '/drug-admin/profile',
     name: 'DrugAdminProfile',
     component: () => import('../views/profile/ProfileView.vue'),
-    meta: { title: '个人中心 - 云医院', roles: ['drug_admin'] }
+    meta: { title: '个人中心 - 云医院', icon: 'User', roles: ['drug_admin'] }
   },
   {
     path: '/drug-admin/drug-stock',
     name: 'DrugStockAdmin',
     component: () => import('../views/pharmacy/DrugStockView.vue'),
-    meta: { title: '药品库存管理 - 云医院', roles: ['drug_admin', 'super_admin'] }
+    meta: { title: '药品库存管理 - 云医院', icon: 'Box', roles: ['drug_admin', 'super_admin'] }
   },
   {
     path: '/drug-admin/purchase',
     name: 'DrugPurchaseAdmin',
     component: () => import('../views/pharmacy/DrugPurchaseView.vue'),
-    meta: { title: '药品采购管理 - 云医院', roles: ['drug_admin', 'super_admin'] }
+    meta: { title: '药品采购管理 - 云医院', icon: 'Goods', roles: ['drug_admin', 'super_admin'] }
   },
   {
     path: '/drug-admin/dispense',
     name: 'DrugDispenseAdmin',
     component: () => import('../views/pharmacy/DrugDispenseView.vue'),
-    meta: { title: '处方配药管理 - 云医院', roles: ['drug_admin', 'super_admin'] }
+    meta: { title: '处方配药管理 - 云医院', icon: 'TakeawayBox', roles: ['drug_admin', 'super_admin'] }
   },
   // --- 财务管理员 ---
   {
     path: '/finance-admin/home',
     name: 'FinanceAdminHome',
     component: () => import('../views/FinanceAdminHome.vue'),
-    meta: { title: '财务工作台 - 云医院', roles: ['finance_admin'] }
+    meta: { title: '财务工作台 - 云医院', icon: 'HomeFilled', roles: ['finance_admin'] }
   },
   {
     path: '/finance-admin/profile',
     name: 'FinanceAdminProfile',
     component: () => import('../views/profile/ProfileView.vue'),
-    meta: { title: '个人中心 - 云医院', roles: ['finance_admin'] }
+    meta: { title: '个人中心 - 云医院', icon: 'User', roles: ['finance_admin'] }
   },
   {
     path: '/finance-admin/pay-orders',
     name: 'FinancePayOrders',
     component: () => import('../views/finance/PayOrderView.vue'),
-    meta: { title: '收费结算 - 云医院', roles: ['finance_admin'] }
+    meta: { title: '收费结算 - 云医院', icon: 'Wallet', roles: ['finance_admin'] }
   },
   {
     path: '/finance-admin/records',
     name: 'FinanceRecords',
     component: () => import('../views/finance/FinanceRecordView.vue'),
-    meta: { title: '财务台账 - 云医院', roles: ['finance_admin'] }
+    meta: { title: '财务台账 - 云医院', icon: 'DataBoard', roles: ['finance_admin'] }
   },
   {
     path: '/finance-admin/reimburses',
     name: 'FinanceReimburses',
     component: () => import('../views/finance/ReimburseView.vue'),
-    meta: { title: '报销管理 - 云医院', roles: ['finance_admin'] }
+    meta: { title: '报销管理 - 云医院', icon: 'Document', roles: ['finance_admin'] }
   },
   {
     path: '/finance-admin/reports',
     name: 'FinanceReports',
     component: () => import('../views/finance/ReportView.vue'),
-    meta: { title: '统计报表 - 云医院', roles: ['finance_admin'] }
+    meta: { title: '统计报表 - 云医院', icon: 'TrendCharts', roles: ['finance_admin'] }
   },
   // --- 系统管理员 ---
   {
     path: '/super-admin/home',
     name: 'SuperAdminHome',
     component: () => import('../views/SuperAdminHome.vue'),
-    meta: { title: '系统管理 - 云医院', roles: ['super_admin'] }
+    meta: { title: '系统管理 - 云医院', icon: 'HomeFilled', roles: ['super_admin'] }
   },
   {
     path: '/super-admin/patients',
     name: 'SuperAdminPatients',
     component: () => import('../views/PatientAdminView.vue'),
-    meta: { title: '患者档案管理 - 云医院', roles: ['super_admin'] }
+    meta: { title: '患者档案管理 - 云医院', icon: 'User', roles: ['super_admin'] }
   },
   {
     path: '/super-admin/profile',
     name: 'SuperAdminProfile',
     component: () => import('../views/profile/ProfileView.vue'),
-    meta: { title: '个人中心 - 云医院', roles: ['super_admin'] }
+    meta: { title: '个人中心 - 云医院', icon: 'User', roles: ['super_admin'] }
   },
   {
     path: '/super-admin/users',
     name: 'SuperAdminUsers',
     component: () => import('../views/admin/UserAdminView.vue'),
-    meta: { title: '用户管理 - 云医院', roles: ['super_admin'] }
+    meta: { title: '用户管理 - 云医院', icon: 'Avatar', roles: ['super_admin'] }
   },
   {
     path: '/super-admin/roles',
     name: 'SuperAdminRoles',
     component: () => import('../views/admin/RoleAdminView.vue'),
-    meta: { title: '角色管理 - 云医院', roles: ['super_admin'] }
+    meta: { title: '角色管理 - 云医院', icon: 'Collection', roles: ['super_admin'] }
   },
   {
     path: '/super-admin/dicts',
     name: 'SuperAdminDicts',
     component: () => import('../views/admin/DictAdminView.vue'),
-    meta: { title: '数据字典 - 云医院', roles: ['super_admin'] }
+    meta: { title: '数据字典 - 云医院', icon: 'Reading', roles: ['super_admin'] }
   },
 
   {
     path: '/super-admin/care-mode',
     name: 'SuperAdminCareMode',
     component: () => import('../views/admin/CareModeConfigView.vue'),
-    meta: { title: '关怀模式配置 - 云医院', roles: ['super_admin'] }
+    meta: { title: '关怀模式配置 - 云医院', icon: 'HelpFilled', roles: ['super_admin'] }
   },
 
   {
     path: '/super-admin/logs',
     name: 'SuperAdminLogs',
     component: () => import('../views/operlog/OperLogView.vue'),
-    meta: { title: '操作日志 - 云医院', roles: ['super_admin'] }
+    meta: { title: '操作日志 - 云医院', icon: 'Document', roles: ['super_admin'] }
   },
   {
     path: '/super-admin/departments',
     name: 'SuperAdminDepartments',
     component: () => import('../views/admin/DeptAdminView.vue'),
-    meta: { title: '科室管理 - 云医院', roles: ['super_admin'] }
+    meta: { title: '科室管理 - 云医院', icon: 'OfficeBuilding', roles: ['super_admin'] }
   },
   {
     path: '/super-admin/doctors',
     name: 'SuperAdminDoctors',
     component: () => import('../views/admin/DoctorAdminView.vue'),
-    meta: { title: '医护人员管理 - 云医院', roles: ['super_admin'] }
+    meta: { title: '医护人员管理 - 云医院', icon: 'UserFilled', roles: ['super_admin'] }
   },
   {
     path: '/super-admin/schedules',
     name: 'SuperAdminSchedules',
     component: () => import('../views/admin/ScheduleAdminView.vue'),
-    meta: { title: '排班管理 - 云医院', roles: ['super_admin'] }
+    meta: { title: '排班管理 - 云医院', icon: 'Calendar', roles: ['super_admin'] }
   },
 
   {
@@ -261,6 +261,7 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../views/message/MessageCenterView.vue'),
     meta: {
       title: '消息中心 - 云医院',
+      icon: 'Bell',
       roles: ['patient', 'doctor', 'drug_admin', 'finance_admin', 'super_admin']
     }
   },
@@ -269,26 +270,26 @@ const routes: RouteRecordRaw[] = [
     path: '/super-admin/leave-audit',
     name: 'SuperAdminLeaveAudit',
     component: () => import('../views/admin/LeaveAdminView.vue'),
-    meta: { title: '请假审批 - 云医院', roles: ['super_admin'] }
+    meta: { title: '请假审批 - 云医院', icon: 'EditPen', roles: ['super_admin'] }
   },
   {
     path: '/super-admin/attendance',
     name: 'SuperAdminAttendance',
     component: () => import('../views/admin/AttendanceAdminView.vue'),
-    meta: { title: '考勤记录 - 云医院', roles: ['super_admin'] }
+    meta: { title: '考勤记录 - 云医院', icon: 'DataAnalysis', roles: ['super_admin'] }
   },
   {
     path: '/super-admin/reports',
     name: 'SuperAdminReports',
     component: () => import('../views/finance/ReportView.vue'),
-    meta: { title: '统计报表 - 云医院', roles: ['super_admin'] }
+    meta: { title: '统计报表 - 云医院', icon: 'TrendCharts', roles: ['super_admin'] }
   },
 
   {
     path: '/super-admin/arrival-statistics',
     name: 'SuperAdminArrivalStatistics',
     component: () => import('../views/admin/ArrivalStatisticsView.vue'),
-    meta: { title: '到诊与爽约统计 - 云医院', roles: ['super_admin'] }
+    meta: { title: '到诊与爽约统计 - 云医院', icon: 'DataLine', roles: ['super_admin'] }
   },
 
   {
