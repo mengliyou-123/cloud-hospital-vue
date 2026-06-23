@@ -1,4 +1,4 @@
-import type { SidebarMenuItem } from '../components/Sidebar.vue'
+﻿import type { SidebarMenuItem } from '../components/Sidebar.vue'
 
 export interface HelpSection {
   title: string
@@ -36,6 +36,17 @@ export const roleTitleMap: Record<string, string> = {
   drug_admin: '药房端',
   finance_admin: '财务端',
   super_admin: '管理员端'
+}
+export const roleIdentityMap: Record<string, string> = {
+  patient: '患者',
+  doctor: '医生',
+  drug_admin: '药房管理员',
+  finance_admin: '财务管理员',
+  super_admin: '系统管理员'
+}
+
+export function getRoleIdentity(roleCode?: string): string {
+  return roleIdentityMap[roleCode || ''] || '系统用户'
 }
 
 export const roleMenus: Record<string, SidebarMenuItem[]> = {
@@ -603,9 +614,10 @@ export function getRoleHelp(roleCode?: string): RoleHelpConfig {
 }
 
 export function getRoleTitle(roleCode?: string): string {
-  return roleTitleMap[roleCode || ''] || '云医院 HIS'
+  return getRoleIdentity(roleCode)
 }
 
 export function getHomePath(roleCode?: string): string {
   return roleHomeMap[roleCode || ''] || '/login'
 }
+

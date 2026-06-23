@@ -1,12 +1,18 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { computed } from 'vue'
 import RoleLayout from './components/RoleLayout.vue'
 import { getUser } from './utils/request'
+import { getRoleIdentity } from './config/roleMenus'
 
 function cleanTitle(title?: unknown) {
   const t = String(title || '云医院 HIS')
   return t.replace(/\s*-\s*云医院\s*$/, '')
 }
+
+const roleSubtitle = computed(() => {
+  const u = getUser()
+  return `当前登录角色：${getRoleIdentity(u?.roleCode)}`
+})
 
 const user = computed(() => getUser())
 </script>
@@ -24,7 +30,7 @@ const user = computed(() => getUser())
         :key="route.path"
         :page-title="cleanTitle(route.meta?.title)"
         :icon-name="(route.meta?.icon as string) || 'HomeFilled'"
-        :subtitle="(route.meta?.subtitle as string) || `当前登录角色：${user?.roleName || '系统用户'}`"
+        :subtitle="(route.meta?.subtitle as string) || roleSubtitle"
       >
         <component :is="Component" />
       </RoleLayout>
@@ -63,3 +69,5 @@ html, body, #app {
   transform: translateY(-4px);
 }
 </style>
+
+
