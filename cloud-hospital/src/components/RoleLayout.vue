@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { getUser } from '../utils/request'
 import Sidebar from './Sidebar.vue'
 import TopHeader from './TopHeader.vue'
 
@@ -13,8 +12,6 @@ const props = defineProps<{
 const collapsed = ref(false)
 const mobileMenuVisible = ref(false)
 
-const user = computed(() => getUser())
-
 function toggleSidebar() {
   if (window.innerWidth <= 860) {
     mobileMenuVisible.value = true
@@ -23,10 +20,7 @@ function toggleSidebar() {
   collapsed.value = !collapsed.value
 }
 
-const fallbackSubtitle = computed(() => {
-  if (props.subtitle) return props.subtitle
-  return `当前登录角色：${user.value?.roleName || '系统用户'}`
-})
+const fallbackSubtitle = computed(() => props.subtitle)
 </script>
 
 <template>
@@ -58,7 +52,7 @@ const fallbackSubtitle = computed(() => {
               </div>
               <div>
                 <h1>{{ props.pageTitle || '云医院 HIS' }}</h1>
-                <p>{{ fallbackSubtitle }}</p>
+                <p v-if="fallbackSubtitle">{{ fallbackSubtitle }}</p>
               </div>
             </div>
           </div>

@@ -2,17 +2,11 @@
 import { computed } from 'vue'
 import RoleLayout from './components/RoleLayout.vue'
 import { getUser } from './utils/request'
-import { getRoleIdentity } from './config/roleMenus'
 
 function cleanTitle(title?: unknown) {
   const t = String(title || '云医院 HIS')
   return t.replace(/\s*-\s*云医院\s*$/, '')
 }
-
-const roleSubtitle = computed(() => {
-  const u = getUser()
-  return `当前登录角色：${getRoleIdentity(u?.roleCode)}`
-})
 
 const user = computed(() => getUser())
 </script>
@@ -20,20 +14,20 @@ const user = computed(() => getUser())
 <template>
   <router-view v-slot="{ Component, route }">
     <transition name="page-fade" mode="out-in" appear>
-      <component
-        v-if="route.meta?.publicLayout || !route.meta?.roles"
-        :is="Component"
-        :key="route.path"
-      />
-      <RoleLayout
-        v-else
-        :key="route.path"
-        :page-title="cleanTitle(route.meta?.title)"
-        :icon-name="(route.meta?.icon as string) || 'HomeFilled'"
-        :subtitle="(route.meta?.subtitle as string) || `当前登录角色：${user?.roleName || '系统用户'}`"
-      >
-        <component :is="Component" />
-      </RoleLayout>
+      <div :key="route.path">
+        <component
+          v-if="route.meta?.publicLayout || !route.meta?.roles"
+          :is="Component"
+        />
+        <RoleLayout
+          v-else
+          :page-title="cleanTitle(route.meta?.title)"
+          :icon-name="(route.meta?.icon as string) || 'HomeFilled'"
+          :subtitle="route.meta?.subtitle as string"
+        >
+          <component :is="Component" />
+        </RoleLayout>
+      </div>
     </transition>
   </router-view>
 </template>
