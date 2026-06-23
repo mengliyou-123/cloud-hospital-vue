@@ -48,6 +48,10 @@ export const getLowStockDrugsApi = (): Promise<Result<Drug[]>> =>
 export const getExpiringDrugsApi = (): Promise<Result<Drug[]>> =>
   request.get('/pharmacy/drugs/warning/expiring')
 
+/** 已过期预警 */
+export const getExpiredDrugsApi = (): Promise<Result<Drug[]>> =>
+  request.get('/pharmacy/drugs/warning/expired')
+
 /** ========== 库存变动记录 ========== */
 export interface DrugStockLog {
   id: number
@@ -95,6 +99,9 @@ export interface DrugInventory {
   totalItems: number
   profitQuantity: number
   lossQuantity: number
+  profitAmount: number
+  lossAmount: number
+  diffRate: number
   status: number
   remark?: string
   createTime: string
@@ -108,10 +115,14 @@ export interface DrugInventoryItem {
   drugId: number
   drugName: string
   drugSpec: string
+  drugType?: string
+  drugPrice: number
   systemQuantity: number
   actualQuantity: number
   diffQuantity: number
+  diffAmount: number
   diffType: string
+  diffReason?: string
   remark?: string
   createTime: string
 }
@@ -131,21 +142,63 @@ export const getInventoryDetailApi = (id: number): Promise<Result<{
 }>> =>
   request.get(`/pharmacy/inventory/${id}`)
 
+/** 获取盘点统计报表 */
+export const getInventoryReportApi = (id: number): Promise<Result<{
+  inventory: DrugInventory
+  items: DrugInventoryItem[]
+  statistics: {
+    totalItems: number
+    matchCount: number
+    profitCount: number
+    lossCount: number
+    totalSystemQty: number
+    totalActualQty: number
+    totalSystemAmount: number
+    totalActualAmount: number
+    profitTop5: DrugInventoryItem[]
+    lossTop5: DrugInventoryItem[]
+  }
+}>> =>
+  request.get(`/pharmacy/inventory/${id}/report`)
+
 /** 创建盘点单 */
 export const createInventoryApi = (data: {
   inventoryType?: string
+  drugType?: string
+  stockLocation?: string
   remark?: string
   drugIds?: number[]
 }): Promise<Result<DrugInventory>> =>
   request.post('/pharmacy/inventory', data)
 
-/** 更新盘点明细实际数量 */
+/** 更新盘点明细实际数量和差异原因 */
 export const updateInventoryItemApi = (data: {
   id: number
   actualQuantity: number
+  diffReason?: string
   remark?: string
 }): Promise<Result<boolean>> =>
   request.post('/pharmacy/inventory/item', data)
+
+/** 批量更新盘点明细 */
+export const batchUpdateInventoryItemsApi = (data: DrugInventoryItem[]): Promise<Result<boolean>> =>
+  request.post('/pharmacy/inventory/items/batch', data)
+
+/** 开始盘点 */
+export const startInventoryApi = (id: number): Promise<Result<boolean>> =>
+  request.post(`/pharmacy/inventory/${id}/start`)
+
+/** 暂停盘点 */
+export const pauseInventoryApi = (id: number): Promise<Result<boolean>> =>
+  request.post(`/pharmacy/inventory/${id}/pause`)
+
+/** 继续盘点 */
+export const resumeInventoryApi = (id: number): Promise<Result<boolean>> =>
+  request.post(`/pharmacy/inventory/${id}/resume`)
+
+/** 作废盘点单 */
+export const cancelInventoryApi = (id: number): Promise<Result<boolean>> =>
+  request.post(`/pharmacy/inventory/${id}/cancel`)
 
 /** 完成盘点 */
 export const finishInventoryApi = (id: number): Promise<Result<boolean>> =>
