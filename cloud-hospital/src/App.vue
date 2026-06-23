@@ -30,7 +30,7 @@ const user = computed(() => getUser())
         :key="route.path"
         :page-title="cleanTitle(route.meta?.title)"
         :icon-name="(route.meta?.icon as string) || 'HomeFilled'"
-        :subtitle="(route.meta?.subtitle as string) || roleSubtitle"
+        :subtitle="(route.meta?.subtitle as string) || `当前登录角色：${user?.roleName || '系统用户'}`"
       >
         <component :is="Component" />
       </RoleLayout>
