@@ -1,6 +1,7 @@
-﻿<script setup lang="ts">
+﻿﻿﻿<script setup lang="ts">
 import { computed } from 'vue'
 import RoleLayout from './components/RoleLayout.vue'
+import ChatAssistant from './components/ChatAssistant.vue'
 import { getUser } from './utils/request'
 
 function cleanTitle(title?: unknown) {
@@ -30,6 +31,7 @@ const user = computed(() => getUser())
       </div>
     </transition>
   </router-view>
+  <ChatAssistant />
 </template>
 
 <style>
